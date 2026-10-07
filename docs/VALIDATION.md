@@ -185,5 +185,13 @@ The continuation remains paused and its instructions now omit client tests.
 - Validation services were stopped after tests. Existing controller, chat, accounts, SFTP, website and community services remain active. No game-controller restart, human role change or firewall change occurred.
 - See docs/COMMUNITY.md and outputs/Community-live-validation.json for scope and workflow. Podium confirmation is an admin action; game scores are not collected automatically. Screenshots: outputs/Forum-dark-theme.png, outputs/Tournaments-admin-controls.png and outputs/Bracket-home.png.
 
+## Automatic download refresh repair — 2026-10-08
+
+- The installed generator had CRLF line endings. Its shebang therefore named a nonexistent interpreter, causing systemd `203/EXEC` failures even though the timer was enabled and running after reboot.
+- The generator was redeployed with LF line endings. Both the systemd service and initial installer refresh now invoke `/usr/bin/python3` explicitly, so copied Windows line endings cannot prevent the scheduled refresh from starting.
+- A temporary owned upload created after the manual refresh appeared during the timer's next normal run. The timer is active and enabled; the refresh service exited successfully. The temporary file was removed and the index refreshed again.
+- All 84 generated download links exactly match the visible completed files in `/srv/lan-party/files`, including the newly uploaded emulator archive, Generals installer and Carmageddon files. Reload an already-open page after uploading; indexing runs about once a minute.
+- No website/game-controller restart, account change or firewall change was needed. Browser verification in the in-app browser was unavailable because it did not trust the LAN HTTPS certificate; the timer and generated file/link checks passed on the host.
+
 - HTTP check before the ET: Legacy addition: 47 downloads passed HEAD/size and resumable-range checks. The 40 original entries are present under their original names except `AOE.iso`, now `Age of Empires Collection.iso`; its SHA-256 still matches the original transfer manifest. The source drive was unavailable for a new complete local checksum comparison.
 - Final service check: controller, nginx website, index timer and SFTP/SSH were active. No test matches remained running.

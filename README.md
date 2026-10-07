@@ -40,6 +40,7 @@ The Quake Live installer downloads official game binaries separately. They are n
 ## Use
 - `/`: main portal.
 - `/downloads/`: games and patches.
+- Upload files to `/srv/lan-party/files`; the download tree refreshes about once a minute. Reload an already-open download page to see new links. The refresh timer starts automatically after reboot.
 - `/servers/`: launch and stop matches; four concurrent slots, including multiple instances of the same game.
 - `lan-server start --map campgrounds --mode ffa --players 8`
 - `lan-server list`

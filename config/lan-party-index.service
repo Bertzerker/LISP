@@ -2,4 +2,4 @@
 Description=Refresh LISP downloads
 [Service]
 Type=oneshot
-ExecStart=/usr/local/bin/lan-party-index
+ExecStart=/usr/bin/python3 /usr/local/bin/lan-party-index

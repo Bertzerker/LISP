@@ -29,7 +29,7 @@ install -m 644 config/*.service config/*.timer /etc/systemd/system/
 install -d /etc/systemd/system/lan-portal.service.d
 printf '[Service]\nEnvironment=LISP_ALLOWED_HOSTS=%s,127.0.0.1,localhost\nEnvironment=LISP_BIND_IP=%s\n' "$LAN_HOST" "$LAN_HOST" > /etc/systemd/system/lan-portal.service.d/network.conf
 bash scripts/install-network-chat.sh
-/usr/local/bin/lan-party-index
+/usr/bin/python3 /usr/local/bin/lan-party-index
 nginx -t -c /etc/nginx/lan-party.conf
 systemctl daemon-reload
 systemctl enable lan-portal.service lan-party-web.service lan-party-index.timer lisp-keep-awake.service

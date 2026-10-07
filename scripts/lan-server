@@ -1,0 +1,41 @@
+#!/usr/bin/python3
+"""Start, list and stop portal servers using your bound local account."""
+import argparse,getpass,json,os,ssl,urllib.request,urllib.error
+from http.cookies import SimpleCookie
+from pathlib import Path
+p=argparse.ArgumentParser(description=__doc__)
+p.add_argument('--account',help='Local portal account name (otherwise prompted)')
+p.add_argument('--url',help='HTTPS portal URL when running on the player PC')
+p.add_argument('--ca',help='Trusted LAN CA certificate file for HTTPS')
+s=p.add_subparsers(dest='action',required=True);s.add_parser('list');s.add_parser('maps')
+a=s.add_parser('start');a.add_argument('--game',default='quakelive');a.add_argument('--players',type=int,default=8);a.add_argument('--mode',default='ffa');a.add_argument('--map',required=True);a.add_argument('--port',type=int);a.add_argument('--ask-passwords',action='store_true');a.add_argument('--admin-steam-ids',default='')
+a=s.add_parser('stop');a.add_argument('id');a=p.parse_args()
+host=os.environ.get('LISP_BIND_IP','192.168.8.138');client=os.environ.get('SSH_CLIENT','').split();session=None;cookie=''
+if a.url:
+ if not a.url.startswith('https://'):p.error('--url must use HTTPS')
+ context=ssl.create_default_context(cafile=a.ca) if a.ca else ssl.create_default_context();authbase=gamebase=a.url.rstrip('/');headers={}
+elif client:
+ context=None;authbase='http://127.0.0.1:8790';gamebase='http://127.0.0.1:8787';headers={'Host':host,'X-Real-IP':client[0],'X-Forwarded-Proto':'https'}
+else:p.error('Run through SSH from your bound LAN PC, or use --url https://LAN_HOST --ca CA_FILE on that PC.')
+def request(base,path,data=None):
+ h={**headers,'Content-Type':'application/json','X-LAN-Request':'1'}
+ if cookie:h['Cookie']='lisp_session='+cookie
+ if session:h['X-CSRF-Token']=session['csrf']
+ response=urllib.request.urlopen(urllib.request.Request(base+path,json.dumps(data).encode() if data is not None else None,headers=h),context=context,timeout=240)
+ return response,json.load(response)
+try:
+ response,session=request(authbase,'/auth-api/login',{'name':a.account or input('Portal account name: '),'password':getpass.getpass('Portal account password: ')})
+ cookie=SimpleCookie(response.headers['Set-Cookie'])['lisp_session'].value
+ if session['mustChange']:p.exit(1,'Change your temporary password on the portal Home page first.\n')
+ if a.action=='maps':path='/api/catalog';data=None
+ elif a.action=='list':path='/api/servers';data=None
+ elif a.action=='start':
+  path='/api/servers';data={'game':a.game,'players':a.players,'mode':a.mode,'map':a.map,'port':a.port,'password':getpass.getpass('Join password (blank = public): ') if a.ask_passwords else '', 'adminPassword':getpass.getpass('Admin/RCON password (blank = disabled): ') if a.ask_passwords else '', 'adminSteamIds':a.admin_steam_ids}
+ else:path='/api/servers/'+a.id+'/stop';data={}
+ _,value=request(gamebase,path,data);print(json.dumps(value,indent=2))
+except urllib.error.HTTPError as e:p.exit(1,e.read().decode()+'\n')
+except urllib.error.URLError as e:p.exit(1,'Portal unavailable: '+str(e.reason)+'\n')
+finally:
+ if cookie:
+  try:request(authbase,'/auth-api/logout',{})
+  except Exception:pass

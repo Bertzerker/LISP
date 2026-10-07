@@ -1,0 +1,21 @@
+[Unit]
+Description=LISP game server controller
+After=network.target
+[Service]
+User=lanserver
+Group=lanserver
+WorkingDirectory=/srv/lan-party/servers
+Environment=HOME=/srv/lan-party/servers
+ExecStart=/usr/bin/python3 -u /opt/lan-portal/portal.py
+Restart=on-failure
+KillMode=mixed
+TimeoutStopSec=240
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/srv/lan-party/servers
+MemoryMax=7G
+TasksMax=256
+[Install]
+WantedBy=multi-user.target

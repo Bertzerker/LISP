@@ -1,0 +1,16 @@
+[Unit]
+Description=Simple Machines Forum PHP worker
+After=lisp-community-postgres.service lisp-accounts.service
+[Service]
+ExecStart=/usr/bin/php-fpm --nodaemonize --fpm-config /etc/lisp/community/forum-fpm.conf -c /etc/lisp/community/forum-php.ini
+Restart=on-failure
+RuntimeDirectory=lisp-forum
+RuntimeDirectoryMode=0755
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/lisp-forum /run/lisp-forum /opt/lisp-forum/cache /opt/lisp-forum/attachments /opt/lisp-forum/custom_avatar /opt/lisp-forum/Settings.php /opt/lisp-forum/Settings_bak.php
+MemoryMax=384M
+TasksMax=64
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,20 @@
+[Unit]
+Description=LISP secure network administration
+After=network.target lisp-network.service
+Requires=lisp-network.service
+[Service]
+User=lanadmin
+Group=lanadmin
+SupplementaryGroups=lanserver
+WorkingDirectory=/opt/lan-portal
+ExecStart=/usr/bin/python3 -u /opt/lan-portal/admin_server.py
+Restart=on-failure
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/lisp-admin
+MemoryMax=160M
+TasksMax=64
+[Install]
+WantedBy=multi-user.target

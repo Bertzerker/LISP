@@ -1,0 +1,29 @@
+/* Match the portal palette, including SMF's alternating rows and gradients. */
+body{min-width:0!important}
+.workspace .page-content{color:#fff}
+.workspace .page-content #wrapper,.workspace .page-content #header,.workspace .page-content #content_section,.workspace .page-content #footer{max-width:none;width:auto;margin:0}
+.workspace .page-content #content_section{padding:0}
+.workspace .page-content #header{padding:12px 0}
+.workspace .page-content :is(#wrapper,#inner_section,#main_content_section,#top_section,#footer,.windowbg,.roundframe,.up_contain,.information,.description,.descbox,.generic_list_wrapper,.approvebg,.approvebg2,.bg,.popup_window,.menu_nav,.dropmenu li ul,.top_menu,.bbc_quote,#post_draft_options){background:var(--panel)!important;background-image:none!important;color:#fff;border-color:var(--line);box-shadow:none}
+.workspace .page-content :is(.windowbg,.up_contain):nth-of-type(even){background:#141c2b!important}
+.workspace .page-content :is(p,span,div,li,td,th,dt,dd,label,small,strong,em,h1,h2,h3,h4){color:inherit;text-shadow:none}
+.workspace .page-content :is(a,a:visited,a span){color:var(--cyan)!important;text-shadow:none}
+.workspace .page-content a:hover{color:#fff!important}
+.workspace .page-content :is(.catbg,.titlebg,.title_bar,.sub_bar,#menu_nav){background:#303b50!important;background-image:none!important;color:#fff;border:1px solid var(--line);text-shadow:none}
+.workspace .page-content :is(.catbg,.titlebg){font-family:Pixel,monospace}
+.workspace .page-content :is(.button,.buttonlist a,button){background:#243a44!important;color:#fff!important;text-shadow:none;box-shadow:none;border:1px solid var(--cyan)}
+.workspace .page-content :is(input,select,textarea,.sceditor-container,.sceditor-container textarea,.sceditor-container iframe){color:#fff!important;background:#111826!important;border-color:var(--line)}
+.workspace .page-content .sceditor-toolbar{background:#303b50!important;border-color:var(--line)}
+.workspace .page-content .sceditor-button{background:#d4e6ef}
+.workspace .page-content .sceditor-dropdown{background:#1b2232!important;color:#fff!important}
+.workspace .page-content .bbc_code{background:#111826;color:#fff}
+.workspace .page-content .post{overflow-wrap:anywhere}
+.workspace .page-content #top_section{max-width:100%}
+.navigation nav{font-family:Pixel,monospace}.chat-inner{font-family:'Courier New',monospace}
+
+/* SMF also styles navigation and controls outside its content wrapper. */
+.portal-layout .navigation nav a{color:var(--cyan)!important}
+.portal-layout .navigation nav a[aria-current],.portal-layout .navigation nav a:hover{color:#fff!important}
+.portal-layout .chat :is(input,select){background:#111826!important;color:#fff!important;border-color:var(--line)}
+.portal-layout .chat button{background:var(--cyan);color:#10232a}
+.workspace .page-content :is(.navigate_section ul,.dropmenu li a.active,.dropmenu li a:hover,.dropmenu li:hover,.top_menu){background:#243a44!important;background-image:none!important;color:#fff!important;border-color:var(--line);box-shadow:none}

@@ -1,0 +1,17 @@
+[Unit]
+Description=Keep the LAN server reachable while its services are installed
+After=systemd-logind.service
+ConditionPathExists=/opt/lan-portal/portal.py
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/systemd-inhibit --what=idle:sleep --mode=block --who=LISP "--why=LAN portal and game servers must remain reachable" /usr/bin/sleep infinity
+Restart=always
+RestartSec=10
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target

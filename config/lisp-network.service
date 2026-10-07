@@ -1,0 +1,19 @@
+[Unit]
+Description=LISP privileged LAN routing and interface controller
+After=NetworkManager.service
+Requires=NetworkManager.service
+[Service]
+User=root
+Group=lanadmin
+WorkingDirectory=/opt/lan-portal
+ExecStart=/usr/bin/python3 -u /opt/lan-portal/network_control.py
+Restart=on-failure
+RuntimeDirectory=lisp-network
+RuntimeDirectoryMode=0750
+UMask=0077
+ProtectHome=true
+PrivateTmp=true
+MemoryMax=160M
+TasksMax=64
+[Install]
+WantedBy=multi-user.target

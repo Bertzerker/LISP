@@ -1,0 +1,22 @@
+{
+  "passed": true,
+  "environment": "private loopback validation databases; no production test accounts or events",
+  "voteChange": true,
+  "tieAdminChoice": true,
+  "automaticBracketCreation": true,
+  "automaticTournamentThread": true,
+  "realEliminationMatchScored": true,
+  "accountSignupMapping": true,
+  "confirmedPodiumTrophies": true,
+  "duplicateFinalizationSafe": true,
+  "sharedSmfIdentity": true,
+  "playerRestrictions": true,
+  "csrfRequired": true,
+  "privateProfileDataExcluded": true,
+  "zeroAndOnePlayerDeletion": true,
+  "recoverableDeletion": true,
+  "cancelledForumPublication": true,
+  "cancelledNativeEditsBlocked": true,
+  "nativeDeleteUsesCancellation": true,
+  "missingNativeBracketRestored": true
+}

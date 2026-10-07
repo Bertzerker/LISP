@@ -1,0 +1,18 @@
+[Unit]
+Description=Local database for Bracket and Simple Machines Forum
+After=network.target
+[Service]
+User=postgres
+Group=postgres
+RuntimeDirectory=lisp-postgres
+RuntimeDirectoryMode=0755
+ExecStart=/usr/bin/postgres -D /var/lib/lisp-postgres
+Restart=on-failure
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/lisp-postgres /run/lisp-postgres
+MemoryMax=512M
+TasksMax=64
+[Install]
+WantedBy=multi-user.target

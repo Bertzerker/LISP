@@ -1,0 +1,11 @@
+[Unit]
+Description=LISP website
+After=network.target
+[Service]
+Type=simple
+ExecStartPre=/usr/bin/nginx -t -c /etc/nginx/lan-party.conf
+ExecStart=/usr/bin/nginx -c /etc/nginx/lan-party.conf -g "daemon off;"
+ExecReload=/usr/bin/nginx -c /etc/nginx/lan-party.conf -s reload
+Restart=on-failure
+[Install]
+WantedBy=multi-user.target

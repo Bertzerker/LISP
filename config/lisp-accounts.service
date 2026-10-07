@@ -1,0 +1,21 @@
+[Unit]
+Description=LISP local accounts and forum
+After=network.target
+[Service]
+User=lanadmin
+Group=lanserver
+SupplementaryGroups=lanadmin
+WorkingDirectory=/opt/lan-portal
+ExecStart=/usr/bin/python3 -u /opt/lan-portal/account_server.py
+Restart=on-failure
+RuntimeDirectory=lisp-accounts
+RuntimeDirectoryMode=0750
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/lisp-accounts
+MemoryMax=256M
+TasksMax=96
+[Install]
+WantedBy=multi-user.target

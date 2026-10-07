@@ -1,0 +1,7 @@
+[Unit]
+Description=Refresh LISP downloads every minute
+[Timer]
+OnBootSec=15s
+OnUnitActiveSec=60s
+[Install]
+WantedBy=timers.target

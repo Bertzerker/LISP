@@ -1,0 +1,19 @@
+[Unit]
+Description=Bracket tournament engine (local API)
+After=lisp-community-postgres.service
+Requires=lisp-community-postgres.service
+[Service]
+User=lanbracket
+Group=lispcommunity
+WorkingDirectory=/opt/lisp-bracket/backend
+EnvironmentFile=/etc/lisp/community/bracket.env
+ExecStart=/opt/lisp-bracket/backend/.venv/bin/python -m uvicorn bracket.app:app --host 127.0.0.1 --port 8793 --workers 1
+Restart=on-failure
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/lisp-bracket/backend/static /var/lib/lisp-bracket
+MemoryMax=512M
+TasksMax=64
+[Install]
+WantedBy=multi-user.target

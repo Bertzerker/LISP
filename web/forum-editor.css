@@ -1,0 +1,5 @@
+/* SCEditor runs in its own document. Retain the upstream content rules. */
+@import url('/forum/Themes/default/css/jquery.sceditor.default.css');
+html,body{background:#111826!important;color:#fff!important;color-scheme:dark;font:14px/1.55 'Courier New',monospace}
+p,div,span,table,td,th,code,code::before{color:inherit;background-color:transparent}
+a{color:#72e9df}blockquote,code{background:#1b2232;border-color:#424e65}

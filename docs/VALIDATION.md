@@ -206,5 +206,7 @@ Its in-game controller authentication and actual player joining are untested.
 No firewall change; originals and all 17 previously available games preserved.
 See docs/CLASSIC-GAMES.md and outputs/Classic-games-status.md.
 
+- 2026-10-08 branding: supplied transparent coat of arms replaces the portal logo and favicon; the Neon Retro Arcade image replaces the sidebar LISP wordmark. Home, native forum and generated downloads loaded both images in the live browser; deployed files matched source hashes, HTTPS assets and forum PHP syntax passed. Screenshot: `outputs/Portal-branding.png`.
+
 - HTTP check before the ET: Legacy addition: 47 downloads passed HEAD/size and resumable-range checks. The 40 original entries are present under their original names except `AOE.iso`, now `Age of Empires Collection.iso`; its SHA-256 still matches the original transfer manifest. The source drive was unavailable for a new complete local checksum comparison.
 - Final service check: controller, nginx website, index timer and SFTP/SSH were active. No test matches remained running.

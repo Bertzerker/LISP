@@ -33,3 +33,8 @@
 [hidden]{display:none!important}.account-forms{display:grid;grid-template-columns:1fr 1fr;gap:24px}.account-list article,#forum-posts article,#forum-topics article{padding:18px;margin:14px 0;border:2px solid var(--border,#596875);background:var(--panel,#17232b)}.forum-tabs{display:flex;flex-wrap:wrap;gap:8px;margin:20px 0}.forum-tabs button[aria-pressed="true"]{outline:2px solid #f5bc54}.topic-link{background:none;text-align:left;padding:0;border:0;color:inherit;font-size:1.1rem}.forum-body{white-space:pre-wrap;overflow-wrap:anywhere}textarea{font:inherit;color:inherit;background:#101b23;border:2px solid #647585;padding:12px;width:100%;box-sizing:border-box}.account-list .admin-form{max-width:100%;margin:12px 0}.account-list .admin-form select{max-width:100%}@media(max-width:700px){.account-forms{grid-template-columns:1fr}}
 
 .forum-tabs button[aria-pressed="true"]{background:var(--yellow);color:#10232a;border-color:#fff8c4}
+
+/* Supplied transparent branding; preserve each image's aspect ratio. */
+.brand .brand-crest{display:block;width:128px;height:128px;max-width:100%;object-fit:contain}
+.brand .brand-wordmark{display:block;width:100%;max-width:200px;height:auto;object-fit:contain}
+@media(max-width:600px){.brand{gap:12px}.brand .brand-crest{width:64px;height:64px}.brand .brand-wordmark{width:min(58vw,220px);height:auto;flex-shrink:1}}

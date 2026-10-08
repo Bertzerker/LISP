@@ -73,7 +73,7 @@ function lisp_theme() {
     if (defined('LISP_BRIDGE')) return;
     global $context;
     add_integration_function('integrate_sceditor_options','lisp_editor_options',false);
-    $context['html_headers'].='<link rel="stylesheet" href="/portal.css"><link rel="stylesheet" href="/forum-portal.css?v=20261008"><script src="/auth.js" defer></script><script src="/shell.js" defer></script>';
+    $context['html_headers'].='<link rel="stylesheet" href="/portal.css?v=20261008-branding"><link rel="stylesheet" href="/forum-portal.css?v=20261008"><script src="/auth.js" defer></script><script src="/shell.js?v=20261008-branding" defer></script>';
 }
 if (!defined('LISP_BRIDGE')) {
     try {

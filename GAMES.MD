@@ -73,3 +73,13 @@ credentials were checked privately, and all six modes passed actual LAN queries.
 Its in-game controller authentication and actual player joining are untested.
 No firewall change; originals and all 17 previously available games preserved.
 See docs/CLASSIC-GAMES.md and outputs/Classic-games-status.md.
+
+## Contagion and Brink — 2026-10-09
+
+Both completed Steam dedicated downloads are integrated and enabled. Contagion
+has 83 installed maps across six modes; Brink has 10 maps and two modes. Each
+passed two isolated instances, actual Windows LAN queries, join protection,
+wrong/correct admin passwords and independent stop. Two-instance production
+portal ownership/readiness/stop passed. Game list is alphabetical. All 21 prior
+games remain present. No additional game firewall rule. Player joining is untested.
+See docs/STEAM-EXTRAS.md and outputs/Steam-extras-portal-validation.json.

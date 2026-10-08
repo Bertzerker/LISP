@@ -203,4 +203,8 @@ def registry():
     for cls in (Wolf2009Adapter,PrimalHuntAdapter):
         a=cls(ROOT)
         if a.installed():games[a.id]=a
-    return games
+    from steam_extras_adapter import BrinkAdapter,ContagionAdapter
+    for cls in (BrinkAdapter,ContagionAdapter):
+        a=cls(ROOT)
+        if a.installed():games[a.id]=a
+    return dict(sorted(games.items(),key=lambda item:item[1].name.casefold()))

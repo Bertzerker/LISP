@@ -6,6 +6,7 @@ from account_client import call
 STATE=Path(os.environ.get('LISP_CHAT_DIR','/srv/lan-party/chat'))
 NICK=re.compile(r'^[A-Za-z][A-Za-z0-9_-]{1,19}$')
 ROOMS={'general':'General','shooter':'Shooter','strategy':'Strategy'}
+MESSAGE_TTL=2*60*60
 def room_id(room):
     if not isinstance(room,str) or room.casefold() not in ROOMS:raise ValueError('Choose General, Shooter or Strategy.')
     return room.casefold()
@@ -22,6 +23,10 @@ class Chat:
                 c.execute("ALTER TABLE messages ADD COLUMN room TEXT NOT NULL DEFAULT 'general'")
             c.executescript('CREATE INDEX IF NOT EXISTS messages_room_id ON messages(room,id);CREATE TABLE IF NOT EXISTS presence(token TEXT,room TEXT,source TEXT,seen REAL,PRIMARY KEY(token,room,source));')
         (self.path/'chat.sqlite3').chmod(0o600)
+        self.expire()
+    def expire(self,now=None):
+        with self.lock,self.db() as c:
+            c.execute('DELETE FROM messages WHERE at<=?',((time.time() if now is None else now)-MESSAGE_TTL,))
     @contextmanager
     def db(self):
         connection=sqlite3.connect(self.path/'chat.sqlite3',timeout=10)
@@ -67,10 +72,11 @@ class Chat:
             else:c.execute('DELETE FROM presence WHERE token=? AND source=?',(token,source))
     def read(self,token,since=0,room='general',source='browser'):
         room=room_id(room);nick=self.enter(token,room,source)
+        self.expire()
         with self.db() as c:
             rows=c.execute('SELECT id,nick,text,at FROM messages WHERE room=? AND id>? ORDER BY id DESC LIMIT 100',(room,since)).fetchall()
             online=[r[0] for r in c.execute('SELECT DISTINCT s.nick FROM sessions s JOIN presence p ON p.token=s.token WHERE p.room=? AND p.seen>? AND s.seen>? ORDER BY s.nick',(room,time.time()-180,time.time()-180))]
-        return {'nick':nick,'room':room,'rooms':[{'id':k,'name':v} for k,v in ROOMS.items()],'messages':[dict(id=r[0],nick=r[1],text=r[2],at=r[3],room=room) for r in reversed(rows)],'online':online}
+        return {'nick':nick,'room':room,'rooms':[{'id':k,'name':v} for k,v in ROOMS.items()],'messages':[dict(id=r[0],nick=r[1],text=r[2],at=r[3],room=room) for r in reversed(rows)],'online':online,'messageTtl':MESSAGE_TTL,'serverTime':time.time()}
     def send(self,token,text,room='general',source='browser'):
         room=room_id(room);nick=self.enter(token,room,source)
         if not isinstance(text,str) or not text.strip() or len(text)>500 or any(ord(x)<32 for x in text):raise ValueError('Write 1–500 characters on one line.')
@@ -81,7 +87,7 @@ class Chat:
             self.rate[token]=now
             if len(self.rate)>256:self.rate={k:v for k,v in self.rate.items() if now-v<60}
             ident=c.execute('INSERT INTO messages(nick,text,at,room) VALUES(?,?,?,?)',(nick,text,now,room)).lastrowid
-            c.execute('DELETE FROM messages WHERE at<? OR (room=? AND id NOT IN (SELECT id FROM messages WHERE room=? ORDER BY id DESC LIMIT 1000))',(now-7*86400,room,room))
+            c.execute('DELETE FROM messages WHERE at<=? OR (room=? AND id NOT IN (SELECT id FROM messages WHERE room=? ORDER BY id DESC LIMIT 1000))',(now-MESSAGE_TTL,room,room))
             peers=list(self.peers)
         for peer in peers:peer.deliver(nick,text,room)
         return {'sent':ident,'room':room}

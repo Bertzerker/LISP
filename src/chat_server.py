@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-import json,os
+import json,os,threading
 from http.server import BaseHTTPRequestHandler,ThreadingHTTPServer
 from urllib.parse import urlparse,parse_qs
 from account_client import check
@@ -39,4 +39,10 @@ class Handler(BaseHTTPRequestHandler):
         except PermissionError as e:self.reply(401,{'error':str(e)})
         except (ValueError,TypeError) as e:self.reply(400,{'error':str(e)})
 if __name__=='__main__':
-    os.umask(0o077);start_irc(CHAT);ThreadingHTTPServer(('127.0.0.1',8789),Handler).serve_forever()
+    os.umask(0o077)
+    def cleanup():
+        while True:
+            CHAT.expire()
+            threading.Event().wait(30)
+    threading.Thread(target=cleanup,daemon=True).start()
+    start_irc(CHAT);ThreadingHTTPServer(('127.0.0.1',8789),Handler).serve_forever()

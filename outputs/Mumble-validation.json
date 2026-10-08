@@ -1,0 +1,14 @@
+{
+  "udpLanPing": true,
+  "nativeTlsCertificatePinned": true,
+  "nativeGuestLogin": true,
+  "channelSwitch": true,
+  "liveViewerUserPresence": true,
+  "channels": [
+    "General",
+    "Shooter",
+    "Strategy"
+  ],
+  "voiceAudio": "not tested",
+  "testClientDisconnected": true
+}

@@ -1,0 +1,57 @@
+{
+  "existingGamesPreserved": [
+    "avp2ph",
+    "crossproduct",
+    "cstrike",
+    "eliteforce",
+    "etlegacy",
+    "halflife",
+    "hl2dm",
+    "iw4x",
+    "jabroni",
+    "jka",
+    "l4d2",
+    "quakelive",
+    "sof2",
+    "swbf2",
+    "t4",
+    "t5",
+    "t6",
+    "tf2",
+    "ut2004",
+    "ut99",
+    "wolf2009"
+  ],
+  "games": [
+    {
+      "game": "contagion",
+      "maps": 83,
+      "modes": [
+        "escape",
+        "extraction",
+        "hunted",
+        "hordemode",
+        "flatline",
+        "panic"
+      ],
+      "twoPortalInstances": true,
+      "creatorOwnershipAndStop": true,
+      "independentStop": true,
+      "joinAndAdminGuidance": true
+    },
+    {
+      "game": "brink",
+      "maps": 10,
+      "modes": [
+        "objective",
+        "stopwatch"
+      ],
+      "twoPortalInstances": true,
+      "creatorOwnershipAndStop": true,
+      "independentStop": true,
+      "joinAndAdminGuidance": true
+    }
+  ],
+  "alphabeticalCatalog": true,
+  "ownedMatchesStopped": true
+}

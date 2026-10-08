@@ -1,0 +1,18 @@
+[Unit]
+Description=LISP authenticated Mumble channel viewer
+After=mumble-server.service
+Wants=mumble-server.service
+[Service]
+User=lispvoice
+Group=lispvoice
+WorkingDirectory=/opt/lisp-mumble
+ExecStart=/usr/bin/node /opt/lisp-mumble/mumble_view.js
+Restart=on-failure
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+MemoryMax=192M
+TasksMax=32
+[Install]
+WantedBy=multi-user.target

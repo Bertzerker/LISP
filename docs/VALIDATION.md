@@ -264,5 +264,39 @@ queue was empty after verification. The older signature-preview warning is
 historical and was repaired earlier. Existing posts, private messages, tournament
 data, accounts and game services were preserved; no service restart was needed.
 
+## Steam additions, Mumble and chat expiry — 2026-10-09
+
+Contagion/Brink each passed paired real server tests: installed maps/modes,
+eight-player limit, advertised protection, actual Windows LAN query,
+wrong/correct RCON authentication and configured join password, plus independent
+stop. Brink rules were read back by native RCON. Production portal tests for
+both passed two simultaneous matches, owner/stop/readiness/Join/admin guidance.
+Catalog is alphabetical, with 23 games and all 21 prior games preserved.
+Actual game client joining/play remains untested. Artifacts:
+`outputs/Steam-contagion-validation.json`, `outputs/Steam-brink-validation.json`,
+`outputs/Steam-extras-portal-validation.json`.
+
+Nine Linux chat tests passed, including cross-room isolation, exact two-hour
+cutoff, reads, initialization and idle cleanup. Production API has TTL 7200;
+expired history was removed. Frontend follows server time when expiring rows.
+
+Mumble passed actual Windows LAN UDP ping, pinned-certificate TLS/native guest
+login, channel switch and CVP membership. Unauthenticated viewer returns 401.
+Seven Player1–Player7 native clients joined alongside admin. Browser showed all
+eight users with no clipping; box height was 621.125 pixels, then 434.969 pixels
+after owned-client cleanup. Admin remained connected. Voice audio was not tested.
+CHAT // MUMBLE switching, active highlight and view persistence passed browser
+checks. Snapshot: `outputs/Mumble-eight-users.png`; sanitized native results:
+`outputs/Mumble-validation.json`, `outputs/Mumble-growth-validation.json`.
+
+Final browser check passed the alphabetically sorted game dropdown, Brink's
+10 maps/two modes and actual owned start/readiness/Steam Join/connection guidance/
+creator stop. Contagion's six modes and Extraction-only map filtering passed.
+Native Mumble remains live across portal navigation and tab selection persists.
+Screenshot: `outputs/Brink-portal.png`; browser proof:
+`outputs/Voice-Steam-browser-validation.json`. Controller, website, chat, accounts,
+index timer, SSH, Mumble and viewer were active; Mumble/viewer enabled at boot.
+Both RPC/viewer listeners are loopback-only. No owned game/voice tests remained.
+
 - HTTP check before the ET: Legacy addition: 47 downloads passed HEAD/size and resumable-range checks. The 40 original entries are present under their original names except `AOE.iso`, now `Age of Empires Collection.iso`; its SHA-256 still matches the original transfer manifest. The source drive was unavailable for a new complete local checksum comparison.
 - Final service check: controller, nginx website, index timer and SFTP/SSH were active. No test matches remained running.

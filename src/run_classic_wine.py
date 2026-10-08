@@ -7,7 +7,7 @@ def main():
  home=Path(sys.argv[1]).resolve();runtime=Path(sys.argv[2]).resolve()
  if os.geteuid()==0:raise RuntimeError('Game engines must not run as root')
  config=json.loads((home/'wine-command.json').read_text())
- env=os.environ.copy();env.update(HOME=str(home),WINEPREFIX=str(home/'wine'),WINEARCH='wow64',WINEDEBUG='-all',WINEDLLOVERRIDES='mscoree,mshtml=d')
+ env=os.environ.copy();env.update(HOME=str(home),WINEPREFIX=str(home/'wine'),WINEARCH='wow64',WINEDEBUG='-all',WINEDLLOVERRIDES=config.get('dllOverrides','mscoree,mshtml=d'))
  def terminate(signum,frame):raise SystemExit(0)
  signal.signal(signal.SIGTERM,terminate);signal.signal(signal.SIGINT,terminate);proc=None
  try:

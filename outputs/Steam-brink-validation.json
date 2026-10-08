@@ -1,0 +1,29 @@
+{
+  "game": "brink",
+  "instances": [
+    {
+      "port": 27015,
+      "mode": "objective",
+      "map": "mp/aquarium",
+      "players": 8,
+      "joinPasswordAdvertised": true,
+      "configuredJoinPasswordVerified": true,
+      "localRconAuthentication": true,
+      "windowsLanQuery": true,
+      "windowsLanRconAuthentication": true
+    },
+    {
+      "port": 27017,
+      "mode": "stopwatch",
+      "map": "mp/ccity",
+      "players": 8,
+      "joinPasswordAdvertised": true,
+      "configuredJoinPasswordVerified": true,
+      "localRconAuthentication": true,
+      "windowsLanQuery": true,
+      "windowsLanRconAuthentication": true
+    }
+  ],
+  "independentStopVerified": true,
+  "playerConnection": "not tested"
+}

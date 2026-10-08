@@ -56,7 +56,7 @@ def start(data,actor):
         used={number for i in active for number,typ in i['adapter'].reserved_ports(i['port']) if typ==socket.SOCK_DGRAM};port=None
         for candidate in ([requested] if requested is not None else PORTS):
             reserved=adapter.reserved_ports(candidate)
-            if (adapter.engine in ('unreal','zomboid') or adapter.id=='t5') and candidate+1 not in PORTS:continue
+            if (adapter.engine in ('unreal','zomboid','brink') or adapter.id=='t5') and candidate+1 not in PORTS:continue
             if any(n in used for n,t in reserved if t==socket.SOCK_DGRAM):continue
             probes=[]
             try:

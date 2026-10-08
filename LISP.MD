@@ -90,3 +90,14 @@ credentials were checked privately, and all six modes passed actual LAN queries.
 Its in-game controller authentication and actual player joining are untested.
 No firewall change; originals and all 17 previously available games preserved.
 See docs/CLASSIC-GAMES.md and outputs/Classic-games-status.md.
+
+## Voice/chat and Steam additions — 2026-10-09
+
+Local Mumble installed with General/Shooter/Strategy, LAN-only TCP/UDP 64738,
+authenticated live channel viewer and native Join. CHAT // MUMBLE tabs switch
+and highlight the current view. Seven actual test clients alongside admin
+proved the box expands without clipping and shrinks on departure; existing
+admin voice connection preserved. Text messages expire after two hours in all
+rooms, including idle cleanup and already-open pages. Contagion and Brink
+are published with two-instance/password/ownership tests and alphabetical list.
+See docs/MUMBLE.md, docs/CHAT.md and docs/STEAM-EXTRAS.md.

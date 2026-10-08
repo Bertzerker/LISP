@@ -1,0 +1,18 @@
+{
+  "alphabeticalGameDropdown": true,
+  "brinkMaps": 10,
+  "brinkModes": [
+    "objective",
+    "stopwatch"
+  ],
+  "brinkBrowserStartReadiness": true,
+  "brinkSteamJoin": true,
+  "brinkCopiedConnectInstructions": true,
+  "brinkCreatorStop": true,
+  "contagionSixModeDropdown": true,
+  "contagionExtractionMapFilter": true,
+  "mumbleTabHighlight": true,
+  "mumbleTabPersistsAcrossPages": true,
+  "chatReturnsWithSelectedRoom": true,
+  "ownedBrowserMatchStopped": true
+}

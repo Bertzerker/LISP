@@ -1,0 +1,16 @@
+{
+  "simultaneousTestUsers": 7,
+  "totalVisibleUsers": 8,
+  "channels": [
+    "General",
+    "Shooter",
+    "Strategy"
+  ],
+  "expandedHeightPixels": 621.125,
+  "heightAfterTestCleanupPixels": 434.96875,
+  "growthPixels": 186.15625,
+  "allUsersVisibleWithoutClipping": true,
+  "existingAdminConnectionPreserved": true,
+  "ownedClientsDisconnected": true,
+  "nativeVoiceAccounts": "temporary guest identities; portal accounts unchanged"
+}

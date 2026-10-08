@@ -1,0 +1,29 @@
+{
+  "game": "contagion",
+  "instances": [
+    {
+      "port": 27015,
+      "mode": "escape",
+      "map": "ce_barlowe",
+      "players": 8,
+      "joinPasswordAdvertised": true,
+      "configuredJoinPasswordVerified": true,
+      "localRconAuthentication": true,
+      "windowsLanQuery": true,
+      "windowsLanRconAuthentication": true
+    },
+    {
+      "port": 27016,
+      "mode": "extraction",
+      "map": "cx_auroraestates_christmas",
+      "players": 8,
+      "joinPasswordAdvertised": true,
+      "configuredJoinPasswordVerified": true,
+      "localRconAuthentication": true,
+      "windowsLanQuery": true,
+      "windowsLanRconAuthentication": true
+    }
+  ],
+  "independentStopVerified": true,
+  "playerConnection": "not tested"
+}

@@ -1,6 +1,17 @@
 # LISP — LAN Party server
 
-A local portal for game downloads, on-demand dedicated servers, player accounts, chat and a forum.
+A local portal for game downloads, on-demand dedicated servers, player accounts, text/voice chat and a forum.
+
+Contagion and Brink are available with two simultaneous instances, map/mode
+selection, join/admin passwords and ownership-controlled stopping. The game
+list is sorted by name. See [Steam additions](docs/STEAM-EXTRAS.md).
+
+Local Mumble voice runs at **192.168.8.138:64738**, with General, Shooter and
+Strategy channels. Click the highlighted **CHAT // MUMBLE** sidebar tabs to
+switch views; **Join voice** opens the desktop app. The live channel box grows
+with its occupants. Text chat messages expire after **two hours** in all rooms.
+See [Mumble setup](docs/MUMBLE.md) and [chat](docs/CHAT.md).
+
 
 Elite Force, Jedi Academy, Wolfenstein (2009) and Aliens vs Predator 2: Primal Hunt
 are now available in the launcher. Each passed two-instance engine and
@@ -69,7 +80,7 @@ L4D2 join passwords are disabled because its native password setting breaks conn
 ## Importing installed servers
 The import script takes the path to a Steam `steamapps/common` folder. It copies recognized dedicated-server installations into `/srv/lan-party/servers/templates`; it does not copy Steam login credentials. Each match gets independent files through filesystem reflinks where supported, with regular copies as fallback. Stop all instances before refreshing templates after a Steam update. The source archive contains no game binaries.
 
-The installer does not change firewall rules. On the current PC, UDP 27015–27018 (games / GoldSrc RCON), TCP 27015–27018 (Source RCON), and TCP 28015–28018 (Quake Live ZMQ RCON) are allowed only from 192.168.8.0/24. Set equivalent LAN-scoped rules on another deployment. The portal uses HTTPS; HTTP redirects to it. Accounts are required for every page beyond Home and for direct downloads, chat, forum and server actions. Use the trusted local CA certificate. The installer does not open listener firewall ports; allow TCP 443 and TCP 6667 only from your trusted LAN if using secure administration and external IRC clients. Browser chat uses the existing website port. Its right-sidebar selector offers General, Shooter and Strategy, with matching authenticated IRC channels; see [chat](docs/CHAT.md).
+The main portal installer does not change firewall rules. The separate Mumble installer adds LAN-only TCP/UDP 64738. On the current PC, UDP 27015–27018 (games / GoldSrc RCON), TCP 27015–27018 (Source RCON), and TCP 28015–28018 (Quake Live ZMQ RCON) are allowed only from 192.168.8.0/24. Set equivalent LAN-scoped rules on another deployment. The portal uses HTTPS; HTTP redirects to it. Accounts are required for every page beyond Home and for direct downloads, chat, forum and server actions. Use the trusted local CA certificate. The installer does not open listener firewall ports; allow TCP 443 and TCP 6667 only from your trusted LAN if using secure administration and external IRC clients. Browser chat uses the existing website port. Its right-sidebar selector offers General, Shooter and Strategy, with matching authenticated IRC channels; see [chat](docs/CHAT.md).
 
 Current test results and remaining engine limitations are recorded in `docs/VALIDATION.md`.
 

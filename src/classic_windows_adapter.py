@@ -135,4 +135,3 @@ class PrimalHuntAdapter(Wolf2009Adapter):
     if info.get('gamename')!='avp2ph' or not info.get('mapname'):return None
     return {'mapname':info['mapname'],'clients':int(info.get('numplayers','0')),'maxPlayers':int(info.get('maxplayers','0')),'passwordProtected':info.get('lock')=='1','mode':info.get('gametype','')}
    except (OSError,ValueError,IndexError):return None
-

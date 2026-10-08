@@ -132,3 +132,10 @@ automatic sleep; see [power management](docs/POWER-MANAGEMENT.md).
 `/tournaments/` offers game voting, automatic Bracket creation, account-based signups and organizer controls. Votes and confirmed results update a Tournaments forum thread automatically. Administrators confirm the final podium; trophies then appear in the **Trophy Room** (`/trophies/`) and native forum profiles. The Trophy Room lists every enabled player with their forum avatar and gold/silver/bronze totals; clicking a player shows each medal's game and tournament. The top-bar avatar opens the native forum profile. Simple Machines Forum 2.1.7 uses the same bound LAN login and dark white/cyan portal palette. See [community setup and operation](docs/COMMUNITY.md) for installation, source licenses, backups, validation and competition limits.
 
 Admins can delete unfinished tournaments when attendance is insufficient, including zero- and one-player events. They disappear from the active list, their forum thread is marked cancelled, and no trophies are awarded. Show deleted tournaments offers restoration with the original roster and bracket.
+
+## Your game servers
+
+Use **My Servers** from the left menu or top-bar activity to manage servers you
+started. Stop and failed-server dismissal controls are there; **Game Servers**
+keeps the launcher, active list and Join controls. Administrators can manage
+other players’ servers in a separate section. See [My Servers](docs/MY-SERVERS.md).

@@ -110,3 +110,13 @@ and date. Top-bar identity opens the native forum profile. Existing profile link
 redirect for compatibility. Final-only awards, no new production awards, existing
 authentication retained. 15 Linux tests and live HTTPS/browser checks passed.
 See docs/TROPHY-ROOM.md and outputs/Trophy-room-validation.json.
+
+## My Servers — 2026-10-09
+
+Added 04 / My Servers with account-owned instances and Stop/failed-dismissal
+controls. Administrator-only section preserves management of other owners.
+Game Servers retains launch/Join but has no Stop or dismissal controls. Top-bar
+server activity links to My Servers. Existing server authorization preserved.
+Isolated ownership/UI fixtures and live HTTPS/browser launch/stop passed.
+No services restarted; only the owned temporary test match was stopped.
+See docs/MY-SERVERS.md and outputs/My-servers-validation.json.

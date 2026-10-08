@@ -22,6 +22,9 @@ install -m 755 src/generate_index.py /usr/local/bin/lan-party-index
 install -m 755 scripts/lan-server /usr/local/bin/lan-server
 install -m 644 web/index.html /srv/lan-party/site/index.html
 install -m 644 web/servers.html /srv/lan-party/site/servers/index.html
+install -d -m 755 /srv/lan-party/site/my-servers
+install -m 644 web/my-servers.html /srv/lan-party/site/my-servers/index.html
+install -m 644 web/server-list.js web/my-servers.js /srv/lan-party/site/
 install -m 644 web/portal.css web/servers.js /srv/lan-party/site/
 if [[ -f /etc/nginx/lan-party.conf ]]; then cp -a /etc/nginx/lan-party.conf /etc/nginx/lan-party.conf.previous; fi
 sed "s|192.168.8.0/24|$LAN_CIDR|g" config/nginx.conf > /etc/nginx/lan-party.conf

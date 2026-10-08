@@ -1,6 +1,6 @@
 # Trophy Room
 
-Open https://192.168.8.138/trophies/ or **06 / TROPHY ROOM** with your LAN account.
+Open https://192.168.8.138/trophies/ or **07 / TROPHY ROOM** with your LAN account.
 Every enabled player appears with their forum avatar (or initial when none is set)
 and separate gold, silver and bronze totals. Players are ordered by gold, silver,
 bronze and then name. Click a player to see the medal, game, tournament link and

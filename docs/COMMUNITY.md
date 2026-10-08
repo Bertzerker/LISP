@@ -114,7 +114,7 @@ data, accounts and game services were preserved; no service restart was needed.
 
 ## Trophy Room — 2026-10-09
 
-**06 / TROPHY ROOM** replaces the portal profile page. Forum avatars and medal
+**07 / TROPHY ROOM** replaces the portal profile page. Forum avatars and medal
 totals link to player details with each award's game and tournament. The top-bar
 avatar opens the native forum profile; old profile links redirect to trophies.
 Only confirmed final results count. See [Trophy Room](TROPHY-ROOM.md).

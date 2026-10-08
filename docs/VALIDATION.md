@@ -314,5 +314,21 @@ Both RPC/viewer listeners are loopback-only. No owned game/voice tests remained.
 - Community, game controller, forum, Mumble and chat services remained active.
   Only the community worker was restarted; no game matches were stopped.
 
+## My Servers — 2026-10-09
+
+- JavaScript fixtures passed own/other-account filtering, two same-game owned
+  instances, administrator-only management, server permission flags, no public
+  Stop/dismiss controls, Join preservation, failed dismissal/refresh and empty state.
+- Updated scripts passed JavaScript syntax checks; deployment files preserve
+  shell LF endings and Python syntax. Live HTTPS page/assets remain protected.
+- Real browser launched one temporary Quake Live / Free for All / campgrounds
+  instance as Robertkopp on 27015. Game Servers showed Join with zero Stop buttons.
+  Top-bar navigation opened My Servers, showing the instance under Your servers.
+  Stop succeeded and the owned list returned to its empty state. No pre-existing
+  matches were present or stopped. Screenshot: outputs/My-servers.png;
+  public list proof: outputs/Game-servers-no-stop.png.
+- Seven existing services remained active. Only static web files were deployed;
+  no service/controller restart, account/role or firewall change was needed.
+
 - HTTP check before the ET: Legacy addition: 47 downloads passed HEAD/size and resumable-range checks. The 40 original entries are present under their original names except `AOE.iso`, now `Age of Empires Collection.iso`; its SHA-256 still matches the original transfer manifest. The source drive was unavailable for a new complete local checksum comparison.
 - Final service check: controller, nginx website, index timer and SFTP/SSH were active. No test matches remained running.

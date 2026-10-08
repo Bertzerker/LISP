@@ -1,0 +1,16 @@
+{
+  "ownershipFixturesPassed": true,
+  "sameGameInstancesFilteredByAccount": true,
+  "administratorControlsRetained": true,
+  "gameServersStopAndDismissControlsRemoved": true,
+  "joinControlsPreserved": true,
+  "anonymousPageAndAssetsBlocked": true,
+  "browserOwnedLaunchVerified": true,
+  "browserTopBarNavigationVerified": true,
+  "browserOwnedStopVerified": true,
+  "temporaryTestCleanedUp": true,
+  "existingMatchesStopped": 0,
+  "servicesRestarted": 0,
+  "activeServiceChecks": 7,
+  "accountRolesAndFirewallUnchanged": true
+}

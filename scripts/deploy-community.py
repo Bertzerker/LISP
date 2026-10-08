@@ -35,6 +35,7 @@ def main():
     if not marker.exists():marker.write_text(json.dumps({'forum':'/forum/','migration':'in-progress'}));marker.chmod(0o600)
     run(['systemctl','restart','lisp-accounts'])
     run(['python3',str(ROOT/'scripts/migrate-community.py')])
+    run(['python3',str(ROOT/'scripts/repair-forum-runtime.py')])
     marker.write_text(json.dumps({'forum':'/forum/','migration':'complete'}));marker.chmod(0o600)
     site=P('/srv/lan-party/site')
     for name in ['tournaments','profile']:

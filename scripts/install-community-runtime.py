@@ -102,6 +102,7 @@ security.limit_extensions=.php
   # Schema functions belong to the forum owner, not the database superuser.
   pg('SET ROLE lisp_forum;\n'+sql,'lisp_forum')
   pg("SET ROLE lisp_forum; UPDATE smf_settings SET value='3' WHERE variable='registration_method'; UPDATE smf_settings SET value='0' WHERE variable IN ('send_welcomeEmail','mail_queue','enableCompressedOutput');",'lisp_forum')
+ run(['python3',str(source/'scripts/repair-forum-runtime.py')])
  for service in ['lisp-bracket','lisp-forum']:
   run(['systemctl','enable','--now',service])
  print('Official pinned community runtimes installed; local bindings only. Portal unchanged.')

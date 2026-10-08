@@ -49,3 +49,11 @@ The staging forum failure was a test socket under the production service's priva
 Canonical live test: `tests/test_community_live.py`. It refuses production URLs/databases and requires an operator-prepared private validation runtime. It is not a production account-creation test. Actual browser results and screenshots are recorded in `docs/VALIDATION.md` and `outputs/Community-status.md`.
 
 Native Bracket Delete is routed through the same recoverable cancellation. Restoration rebuilds account mappings if an event had already been purged through the native UI before this fix. Both paths passed isolated live tests. The blank native stage screen for a missing event now provides an unavailable message and a return link. SMF uses its bundled local jQuery, so the editor works without external CDNs.
+
+## Forum runtime repair — 2026-10-08
+
+`sudo python3 scripts/repair-forum-runtime.py` repairs the pinned SMF runtime without changing member roles, board permissions, posts, uploads or service filesystem restrictions. Installation and deployment also invoke it. Private backups are stored under `/srv/lan-party/community-setup/backup/forum-repair-*`.
+
+SMF asset minification is disabled because the theme CSS/scripts directories are intentionally read-only. The normal original assets remain available. The attachment directory setting is stored as a JSON object keyed by the selected directory ID, matching SMF 2.1's maintenance expectations. Two guarded assignments in `Sources/Session.php` and `Sources/Load.php` handle PostgreSQL's false return for missing session/last-visit rows without PHP warnings. The script refuses unexpected upstream source or unknown upload paths rather than overwriting them.
+
+`php -c /etc/lisp/community/forum-php.ini tests/test_forum_runtime.php` checks the installed missing/existing/invalid session behavior and missing/existing last-visit results. Fresh administrator login and five authenticated forum pages passed; error count and last error ID stayed at 180. Existing historical errors and failed-login audit entries are retained.

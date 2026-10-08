@@ -145,7 +145,11 @@ CREATE TABLE IF NOT EXISTS audit(id INTEGER PRIMARY KEY,actor INTEGER,action TEX
                 self.queue(c,f'signup:{ident}:{person["user"]}','signup',ident,{'user':person['user']})
             self.log(c,user,'restore-tournament',ident)
     def trophies(self,ident):
-        with self.db() as c:return [dict(r) for r in c.execute('SELECT awards.poll,rank,team,awards.created,polls.name,polls.winner AS game,polls.bracket,polls.thread FROM awards JOIN polls ON polls.id=awards.poll WHERE user=? ORDER BY awards.created DESC',(ident,))]
+        with self.db() as c:return [dict(r) for r in c.execute("SELECT awards.poll,rank,team,awards.created,polls.name,polls.winner AS game,COALESCE(options.label,polls.winner,'Unknown game') AS gameName,polls.bracket,polls.thread FROM awards JOIN polls ON polls.id=awards.poll LEFT JOIN options ON options.poll=polls.id AND options.game=polls.winner WHERE user=? AND polls.status='final' ORDER BY awards.created DESC,awards.poll DESC",(ident,))]
+    def medal_totals(self):
+        with self.db() as c:
+            rows=c.execute("SELECT awards.user,SUM(CASE WHEN rank=1 THEN 1 ELSE 0 END) AS gold,SUM(CASE WHEN rank=2 THEN 1 ELSE 0 END) AS silver,SUM(CASE WHEN rank=3 THEN 1 ELSE 0 END) AS bronze FROM awards JOIN polls ON polls.id=awards.poll WHERE polls.status='final' GROUP BY awards.user")
+            return {r['user']:{k:r[k] for k in ('gold','silver','bronze')} for r in rows}
     def pending(self):
         with self.db() as c:
             r=c.execute('SELECT * FROM outbox WHERE next<=? ORDER BY id LIMIT 1',(self.clock(),)).fetchone();return dict(r) if r else None
@@ -197,7 +201,7 @@ class Worker:
         if p['status']=='choice':lines.append('Tie or no votes: awaiting an administrator\'s game choice.')
         if p['participants']:lines.append('Players: '+', '.join(bb(x['name']) for x in p['participants']))
         if p['awards']:
-            lines+=['','[b]Confirmed results[/b]']+[f'{a["rank"]}. [url=https://{self.services.config["host"]}/profile/?user={a["user"]}]{bb(a["name"])}[/url]' for a in p['awards']]
+            lines+=['','[b]Confirmed results[/b]']+[f'{a["rank"]}. [url=https://{self.services.config["host"]}/trophies/?user={a["user"]}]{bb(a["name"])}[/url]' for a in p['awards']]
         return '\n'.join(lines)
     def tick(self):
         if not self.serial.acquire(False):return

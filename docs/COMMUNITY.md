@@ -9,7 +9,7 @@ Open https://192.168.8.138/tournaments/ with your existing LAN account. The same
 3. Voting closes automatically. A unique winner creates the Bracket tournament and opens signups. A tie or no votes waits for an administrator's choice among the tied games. Administrators can close voting early.
 4. Players press **Join tournament**. Each account is mapped to a Bracket player and an initial individual team. The organizer uses **Manage bracket** to create stages, assign teams, schedule matches and enter scores. The portal's server-launch link preselects the winning game; it does not launch a match automatically.
 5. When the tournament is actually finished, the administrator chooses the gold, silver and optional bronze teams and confirms the results. Those teams' players must have signed up through the portal. This is an explicit confirmation of final placings, not an inference from provisional rankings.
-6. Confirmed results automatically appear in the tournament thread and grant trophies on `/profile/` and the forum's **Trophies** profile tab. Repeated confirmation/publication does not duplicate awards or replies. The gateway blocks further tournament edits after confirmation.
+6. Confirmed results automatically appear in the tournament thread and grant trophies in the **Trophy Room** (`/trophies/`) and the forum's **Trophies** profile tab. Repeated confirmation/publication does not duplicate awards or replies. The gateway blocks further tournament edits after confirmation.
 
 Bracket supports different competition formats through its own organizer screens. Signups initially create individual teams; when combining them into team events, keep the account-mapped players in the teams. Upstream limits include 64 teams per tournament and 64 tournaments per club. The portal caps signups at 64 accounts. There is no automatic tournament game-server orchestration, seeding, score collection from games or chat announcement bot.
 
@@ -69,7 +69,7 @@ personal server count include other players. Match times come from scheduled
 Bracket matches for the account's mapped team. Unscheduled, draft, scored,
 cancelled and past matches are excluded. Unavailable services are labelled.
 
-Use **My profile → Change avatar** to open the native forum uploader. The
+Click your top-bar avatar to open your native forum profile and change your avatar there. The
 supplied `avatar/avatar.png` was saved for admin through that uploader. Avatar
 images need a readable/traversable `custom_avatar` directory; installation and
 repair preserve mode 0755 for this image folder. Private attachments and
@@ -111,3 +111,10 @@ The error log remained at four retained entries (last ID 184), and the backgroun
 queue was empty after verification. The older signature-preview warning is
 historical and was repaired earlier. Existing posts, private messages, tournament
 data, accounts and game services were preserved; no service restart was needed.
+
+## Trophy Room — 2026-10-09
+
+**06 / TROPHY ROOM** replaces the portal profile page. Forum avatars and medal
+totals link to player details with each award's game and tournament. The top-bar
+avatar opens the native forum profile; old profile links redirect to trophies.
+Only confirmed final results count. See [Trophy Room](TROPHY-ROOM.md).

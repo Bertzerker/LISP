@@ -20,7 +20,7 @@ def main():
     for name in ['accounts.py','account_server.py','account_client.py']:
         existing=P('/opt/lan-portal')/name
         if existing.exists():shutil.copy2(existing,backup/name)
-    for name in ['accounts.py','account_server.py','account_client.py','community.py','community_server.py','personal_status.py']:install(ROOT/'src'/name,P('/opt/lan-portal')/name)
+    for name in ['accounts.py','account_server.py','account_client.py','community.py','community_server.py','personal_status.py','trophy_room.py']:install(ROOT/'src'/name,P('/opt/lan-portal')/name)
     for source,dest in [('Lisp.php','Sources/Lisp.php'),('bridge.php','lisp-bridge.php'),('setup.php','lisp-setup.php')]:install(ROOT/'forum'/source,P('/opt/lisp-forum')/dest)
     for name in ['Lisp.php','lisp-bridge.php','lisp-setup.php']:
         path=P('/opt/lisp-forum')/('Sources/Lisp.php' if name=='Lisp.php' else name)
@@ -38,9 +38,9 @@ def main():
     run(['python3',str(ROOT/'scripts/repair-forum-runtime.py')])
     marker.write_text(json.dumps({'forum':'/forum/','migration':'complete'}));marker.chmod(0o600)
     site=P('/srv/lan-party/site')
-    for name in ['tournaments','profile']:
+    for name in ['tournaments','profile','trophies']:
         (site/name).mkdir(exist_ok=True);install(ROOT/'web'/(name+'.html'),site/name/'index.html')
-    for name in ['tournaments.js','profile.js','community.css','forum-portal.css','forum-editor.css','shell.js','personal-bar.js','portal.css','servers.js']:install(ROOT/'web'/name,site/name)
+    for name in ['tournaments.js','profile.js','trophies.js','community.css','forum-portal.css','forum-editor.css','shell.js','personal-bar.js','portal.css','servers.js']:install(ROOT/'web'/name,site/name)
     for kind,name in [('http','community-http.conf'),('portal','community-locations.conf')]:
         directory=P('/etc/nginx/lisp-community')/kind;directory.mkdir(parents=True,exist_ok=True);install(ROOT/'config'/name,directory/'runtime.conf')
     run(['python3',str(ROOT/'scripts/package-bracket-source.py'),'/opt/lisp-bracket','/srv/lan-party/community-source'])

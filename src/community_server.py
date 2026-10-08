@@ -9,10 +9,12 @@ from pathlib import Path
 import account_client
 from community import Store,Services,Worker,admin
 from personal_status import PersonalStatus
+from trophy_room import TrophyRoom
 
 CONFIG=json.loads(Path(os.getenv('LISP_COMMUNITY_CONFIG','/etc/lisp/community/settings.json')).read_text())
 STORE=Store(os.getenv('LISP_COMMUNITY_DIR','/var/lib/lisp-community'));SERVICES=Services(CONFIG);WORKER=Worker(STORE,SERVICES)
 PERSONAL=PersonalStatus(STORE,SERVICES)
+TROPHY_ROOM=TrophyRoom(STORE,SERVICES)
 HOSTS={CONFIG['host'],'10.42.0.1','127.0.0.1','localhost'}
 def profiles():return account_client.call({'op':'community-users'})['users']
 def profile(ident):
@@ -85,6 +87,7 @@ class Handler(BaseHTTPRequestHandler):
                 if url.path=='/community-api/tournaments':self.reply(200,{'tournaments':STORE.view(user,include_cancelled=q.get('archived',['0'])[0]=='1'),'games':games(self.headers)})
                 elif url.path=='/community-api/status':self.reply(200,PERSONAL.get(user))
                 elif url.path=='/community-api/profile':self.reply(200,profile(int(q.get('user',[user['id']])[0])))
+                elif url.path=='/community-api/trophies':self.reply(200,TROPHY_ROOM.listing(profiles()))
                 elif url.path=='/community-api/profiles':self.reply(200,{'users':profiles()})
                 elif url.path=='/community-api/bracket-session':
                     me=SERVICES.api('users/me')['data'];self.reply(200,{'user_id':me['id'],'access_token':'portal-session','csrf':user['csrf'],'role':user['role']})

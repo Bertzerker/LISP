@@ -101,3 +101,12 @@ admin voice connection preserved. Text messages expire after two hours in all
 rooms, including idle cleanup and already-open pages. Contagion and Brink
 are published with two-instance/password/ownership tests and alphabetical list.
 See docs/MUMBLE.md, docs/CHAT.md and docs/STEAM-EXTRAS.md.
+
+## Trophy Room — 2026-10-09
+
+Replaced 06 / My Profile with Trophy Room. All enabled players have forum avatars
+and gold/silver/bronze totals; player details show each medal's game, tournament
+and date. Top-bar identity opens the native forum profile. Existing profile links
+redirect for compatibility. Final-only awards, no new production awards, existing
+authentication retained. 15 Linux tests and live HTTPS/browser checks passed.
+See docs/TROPHY-ROOM.md and outputs/Trophy-room-validation.json.

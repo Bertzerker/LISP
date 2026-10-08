@@ -1,0 +1,17 @@
+{
+  "allEnabledPlayersListed": 10,
+  "goldSilverBronzeMatchConfirmedAwards": true,
+  "forumAvatarsAvailable": true,
+  "nativeAdminAvatarLoaded": true,
+  "profileNavigationReplaced": true,
+  "topBarProfileUsesForum": true,
+  "trophyPageRequiresLogin": true,
+  "trophyApiRequiresLogin": true,
+  "realTrophies": 0,
+  "productionAwardsUnchanged": true,
+  "linuxRegressionTests": 15,
+  "browserDirectoryVerified": true,
+  "browserPlayerDetailVerified": true,
+  "browserBackNavigationVerified": true,
+  "browserRealAvatarVerified": true
+}

@@ -62,10 +62,10 @@ function lisp_trophies() {
 }
 function template_lisp_trophies() {
     global $context;
-    echo '<h3 class="catbg">Tournament trophies</h3><div class="windowbg"><p><a href="/profile/?user=',(int)$context['id_member'],'">Open LAN player profile</a></p>';
+    echo '<h3 class="catbg">Tournament trophies</h3><div class="windowbg"><p><a href="/trophies/?user=',(int)$context['id_member'],'">Open Trophy Room</a></p>';
     $awards=$context['lisp_profile']['trophies']??[];
     if (!$awards) echo '<p>No tournament trophies yet.</p>';
-    foreach ($awards as $a) echo '<p><strong>', ['','Gold','Silver','Bronze'][(int)$a['rank']], '</strong> · <a href="/tournaments/?id=',(int)$a['poll'],'">',htmlspecialchars($a['name'], ENT_QUOTES, 'UTF-8'),'</a></p>';
+    foreach ($awards as $a) echo '<p><strong>', ['','Gold','Silver','Bronze'][(int)$a['rank']], '</strong> · <a href="/tournaments/?id=',(int)$a['poll'],'">',htmlspecialchars($a['name'], ENT_QUOTES, 'UTF-8'),'</a> · ',htmlspecialchars($a['gameName']??$a['game'], ENT_QUOTES, 'UTF-8'),'</p>';
     echo '</div>';
 }
 function lisp_editor_options(&$options) { $options['style']='/forum-editor.css'; }

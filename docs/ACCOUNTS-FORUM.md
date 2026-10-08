@@ -40,3 +40,10 @@ Voting, Bracket tournaments, automatic Tournament threads and trophies are integ
 ## Validation
 
 Run `python tests/test_accounts.py` for binding changes, session theft across interfaces, CSRF, reset/change, roles, disabling, session expiry/logout, one-use IRC codes, forum persistence and moderation. The live integration test requires a LAN client, the trusted LAN CA and SSH administration for its disposable test accounts. It uses two free slots and stops only its own SoF2 tests. Existing legacy test tools that call unauthenticated APIs must be updated to provide the bound session and CSRF token.
+
+## Trophy Room — 2026-10-09
+
+The authenticated Trophy Room lists enabled accounts with forum avatars and
+gold/silver/bronze totals. Clicking a player shows confirmed medals and games.
+Its API returns no interface binding or credential data. Profiles and avatar
+editing remain available through the forum and top-bar avatar.

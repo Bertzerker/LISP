@@ -31,6 +31,25 @@ if (($data['operation']??'')==='status') {
         header('Content-Type: application/json');header('Cache-Control: no-store');echo json_encode(['avatar'=>$avatar,'unreadMessages'=>$messages,'unreadTopics'=>$topics]);exit;
     } catch (Throwable $e) {http_response_code(503);header('Content-Type: application/json');echo '{"error":"Forum status unavailable"}';exit;}
 }
+if (($data['operation']??'')==='avatars') {
+    $ids=$data['users']??null;
+    if (!is_array($ids) || count($ids)>200 || array_filter($ids,fn($id)=>!is_int($id)||$id<1)) {http_response_code(400);exit;}
+    try {
+        $avatars=[];
+        if ($ids) {
+            $q=$smcFunc['db_query']('', 'SELECT id_member,filename,attachment_type,id_attach FROM {db_prefix}attachments WHERE id_member IN ({array_int:members}) AND id_msg=0 ORDER BY id_attach DESC', ['members'=>$ids]);
+            while ($pic=$smcFunc['db_fetch_assoc']($q)) {
+                $id=(int)$pic['id_member'];
+                if (array_key_exists($id,$avatars)) continue;
+                $avatars[$id]=null;
+                if ((int)$pic['attachment_type']===1 && preg_match('/^[A-Za-z0-9_.-]+\.(png|gif|jpe?g|webp|svg)$/i',$pic['filename'])) $avatars[$id]='/forum/custom_avatar/'.rawurlencode($pic['filename']);
+                elseif ((int)$pic['attachment_type']===0) $avatars[$id]='/forum/index.php?action=dlattach;attach='.(int)$pic['id_attach'].';type=avatar';
+            }
+            $smcFunc['db_free_result']($q);
+        }
+        header('Content-Type: application/json');header('Cache-Control: no-store');echo json_encode(['avatars'=>(object)$avatars]);exit;
+    } catch (Throwable $e) {http_response_code(503);header('Content-Type: application/json');echo '{"error":"Avatars unavailable"}';exit;}
+}
 $db=$db_connection; $key=$data['key'];
 function lisp_bridge_query($sql,$params=[]) {
     global $db;

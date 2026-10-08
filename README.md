@@ -35,7 +35,7 @@ This directory is the source project. `LISP.MD`, `GAMES.MD`, and `quake live.MD`
 
 The personal top bar shows each player's forum avatar, own running servers,
 unread forum topics/messages and next scheduled tournament match. Avatar changes
-use the native forum uploader from **My profile**. See
+use the native forum uploader through the top-bar avatar and forum profile. See
 [community features](docs/COMMUNITY.md).
 
 ## Layout
@@ -129,6 +129,6 @@ automatic sleep; see [power management](docs/POWER-MANAGEMENT.md).
 
 ## Integrated tournaments and Simple Machines Forum
 
-`/tournaments/` offers game voting, automatic Bracket creation, account-based signups and organizer controls. Votes and confirmed results update a Tournaments forum thread automatically. Administrators confirm the final podium; trophies then appear in `/profile/` and native forum profiles. Simple Machines Forum 2.1.7 uses the same bound LAN login and dark white/cyan portal palette. See [community setup and operation](docs/COMMUNITY.md) for installation, source licenses, backups, validation and competition limits.
+`/tournaments/` offers game voting, automatic Bracket creation, account-based signups and organizer controls. Votes and confirmed results update a Tournaments forum thread automatically. Administrators confirm the final podium; trophies then appear in the **Trophy Room** (`/trophies/`) and native forum profiles. The Trophy Room lists every enabled player with their forum avatar and gold/silver/bronze totals; clicking a player shows each medal's game and tournament. The top-bar avatar opens the native forum profile. Simple Machines Forum 2.1.7 uses the same bound LAN login and dark white/cyan portal palette. See [community setup and operation](docs/COMMUNITY.md) for installation, source licenses, backups, validation and competition limits.
 
 Admins can delete unfinished tournaments when attendance is insufficient, including zero- and one-player events. They disappear from the active list, their forum thread is marked cancelled, and no trophies are awarded. Show deleted tournaments offers restoration with the original roster and bracket.

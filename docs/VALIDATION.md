@@ -298,5 +298,21 @@ Screenshot: `outputs/Brink-portal.png`; browser proof:
 index timer, SSH, Mumble and viewer were active; Mumble/viewer enabled at boot.
 Both RPC/viewer listeners are loopback-only. No owned game/voice tests remained.
 
+## Trophy Room — 2026-10-09
+
+- 15 isolated Linux tests passed (12 existing community tests and 3 Trophy Room
+  tests): confirmed-only counts, gold/silver/bronze, historical game labels,
+  zero-award players, sorting, avatar caching and forum recovery.
+- PHP lint, Python compilation and JavaScript syntax checks passed.
+- Authenticated HTTPS verified all 10 enabled players, totals against individual
+  award records, native avatar images, navigation and forum-profile links.
+  Anonymous page/API access remained blocked.
+- Browser verified the real player directory, Robertkopp's avatar/medal totals,
+  player detail and back navigation. Screenshots: outputs/Trophy-room.png and
+  outputs/Trophy-room-player.png. Zero confirmed production awards existed;
+  no test awards or account/role changes were made.
+- Community, game controller, forum, Mumble and chat services remained active.
+  Only the community worker was restarted; no game matches were stopped.
+
 - HTTP check before the ET: Legacy addition: 47 downloads passed HEAD/size and resumable-range checks. The 40 original entries are present under their original names except `AOE.iso`, now `Age of Empires Collection.iso`; its SHA-256 still matches the original transfer manifest. The source drive was unavailable for a new complete local checksum comparison.
 - Final service check: controller, nginx website, index timer and SFTP/SSH were active. No test matches remained running.

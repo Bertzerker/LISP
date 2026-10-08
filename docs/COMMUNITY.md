@@ -89,3 +89,25 @@ Installed PHP regression tests passed sessions, last visits and signature
 preview with warnings promoted to exceptions. Screenshot:
 `outputs/Personal-bar.png`; sanitized result:
 `outputs/Personal-bar-validation.json`.
+
+## Forum notification repair — 2026-10-08
+
+The error log contained three new cron warnings in
+`Sources/tasks/CreatePost-Notify.php:134`. The permission loop unpacked
+PostgreSQL's `false` end-of-results value as an array. It now checks the fetched
+row before unpacking it. Allowed and denied groups are preserved; no board
+permissions or notification preferences changed.
+
+The installed PHP regression test passed empty permission sets and allowed,
+denied and mixed rows with warnings promoted to exceptions. The actual installed
+notification task also passed native PostgreSQL queries for General and
+Tournaments. That check uses an edit with no mentions/quotes and message ID 0;
+it sends no notifications and edits no posts. Its native task base is loaded from
+the pinned cron source. Test: `tests/test_forum_notification_live.php`.
+
+A fresh authenticated login passed the index, both demo threads and admin error
+log. The normal web cron endpoint returned HTTP 200 with its GIF response.
+The error log remained at four retained entries (last ID 184), and the background
+queue was empty after verification. The older signature-preview warning is
+historical and was repaired earlier. Existing posts, private messages, tournament
+data, accounts and game services were preserved; no service restart was needed.

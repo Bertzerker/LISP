@@ -35,4 +35,16 @@ $memberContext = [1 => ['name' => 'Validation member']];
 $signature = 'Signature preview';
 eval($matches[0]);
 if ($context['member']['signature_preview'] !== $signature) throw new RuntimeException('Signature preview changed');
-echo "PASS sessions, last-visit rows and signature preview without warnings.\n";
+// Preserve both permission groups and tolerate PostgreSQL's false at EOF.
+$source = file_get_contents('/opt/lisp-forum/Sources/tasks/CreatePost-Notify.php');
+if (!preg_match('/while \(\$permission_row = [^\n]+\)\s*\{\s*list [^\n]+;\s*\$group_permissions[^\n]+;\s*\}/', $source, $matches)) throw new RuntimeException('Notification permission loop not found');
+foreach ([[], [[-1, '0']], [[0, '1']], [[-1, '0'], [0, '1'], [2, '0']]] as $permission_rows) {
+    $request = true;
+    $group_permissions = ['allowed' => [], 'denied' => []];
+    $smcFunc['db_fetch_row'] = function() use (&$permission_rows) { return array_shift($permission_rows) ?: false; };
+    $expected = ['allowed' => [], 'denied' => []];
+    foreach ($permission_rows as $permission) $expected[$permission[1] === '0' ? 'allowed' : 'denied'][] = $permission[0];
+    eval($matches[0]);
+    if ($group_permissions !== $expected) throw new RuntimeException('Board notification permissions changed');
+}
+echo "PASS sessions, last visits, signature preview and empty/populated notification permissions without warnings.\n";

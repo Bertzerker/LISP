@@ -11,6 +11,9 @@ PATCHES={
  'Session.php': ("list ($sess_data) = $smcFunc['db_fetch_row']($result);", "list ($sess_data) = $smcFunc['db_fetch_row']($result) ?: array(null);"),
  'Load.php': ("list ($visitTime) = $smcFunc['db_fetch_row']($result);", "list ($visitTime) = $smcFunc['db_fetch_row']($result) ?: array(null);"),
  'Profile-Modify.php': ("'sig' . $memberContext[$context['id_member']]", "'sig' . (int) $context['id_member']"),
+ 'tasks/CreatePost-Notify.php': (
+  "while (list ($id_group, $deny) = $smcFunc['db_fetch_row']($request))\n\t\t\t$group_permissions[$deny === '0' ? 'allowed' : 'denied'][] = $id_group;",
+  "while ($permission_row = $smcFunc['db_fetch_row']($request))\n\t\t{\n\t\t\tlist ($id_group, $deny) = $permission_row;\n\t\t\t$group_permissions[$deny === '0' ? 'allowed' : 'denied'][] = $id_group;\n\t\t}")
 }
 def pg(sql):
  return subprocess.check_output(['runuser','-u','postgres','--','psql','-X','-v','ON_ERROR_STOP=1','-h','/run/lisp-postgres','-p','5433','-d','lisp_forum','-Atc',sql],text=True).strip()

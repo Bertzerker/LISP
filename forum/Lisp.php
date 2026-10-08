@@ -30,7 +30,7 @@ function lisp_member($user) {
     return (int)$user['id'];
 }
 function lisp_verify_user() {
-    if (defined('LISP_BRIDGE')) return 500001;
+    if (defined('LISP_BRIDGE')) return isset($GLOBALS['lisp_bridge_actor']) ? lisp_member($GLOBALS['lisp_bridge_actor']) : 500001;
     return lisp_member($GLOBALS['lisp_account']);
 }
 function lisp_verify_password($name, $password, $unused=false) {
@@ -73,7 +73,7 @@ function lisp_theme() {
     if (defined('LISP_BRIDGE')) return;
     global $context;
     add_integration_function('integrate_sceditor_options','lisp_editor_options',false);
-    $context['html_headers'].='<link rel="stylesheet" href="/portal.css?v=20261008-branding"><link rel="stylesheet" href="/forum-portal.css?v=20261008"><script src="/auth.js" defer></script><script src="/shell.js?v=20261008-branding" defer></script>';
+    $context['html_headers'].='<link rel="stylesheet" href="/portal.css?v=20261008-personal"><link rel="stylesheet" href="/forum-portal.css?v=20261008"><script src="/auth.js" defer></script><script src="/shell.js?v=20261008-personal" defer></script>';
 }
 if (!defined('LISP_BRIDGE')) {
     try {

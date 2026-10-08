@@ -5,6 +5,11 @@ $cfg=json_decode(file_get_contents(getenv('LISP_COMMUNITY_CONFIG')?:'/etc/lisp/c
 if (($_SERVER['REMOTE_ADDR']??'')!=='127.0.0.1' || $_SERVER['REQUEST_METHOD']!=='POST' || strlen($raw)>10485760 || !hash_equals(hash_hmac('sha256',$raw,$cfg['forumSecret']),$_SERVER['HTTP_X_LISP_SIGNATURE']??'')) { http_response_code(403); exit; }
 $data=json_decode($raw,true);
 if (!$data || !preg_match('/^[A-Za-z0-9:_-]{1,100}$/',$data['key']??'')) {http_response_code(400);exit;}
+if (($data['operation']??'')==='status') {
+    $actor=$data['user']??[];
+    if (!is_int($actor['id']??null) || $actor['id']<1 || !preg_match('/^[A-Za-z][A-Za-z0-9_-]{1,19}$/',$actor['name']??'') || !in_array($actor['role']??'', ['player','admin'],true)) {http_response_code(400);exit;}
+    $GLOBALS['lisp_bridge_actor']=$actor;
+}
 define('LISP_BRIDGE',true);
 $_SERVER['HTTP_HOST']=$cfg['host']; $_SERVER['HTTPS']='on';
 $ssi_guest_access=true;
@@ -12,6 +17,20 @@ $root=$cfg['forumDir']??'/opt/lisp-forum';
 require $root.'/SSI.php';
 require_once $root.'/Sources/Lisp.php';
 require_once $root.'/Sources/Subs-Post.php';
+if (($data['operation']??'')==='status') {
+    try {
+        $member=(int)$actor['id'];
+        $q=$smcFunc['db_query']('', 'SELECT COUNT(*) FROM {db_prefix}pm_recipients WHERE id_member={int:member} AND deleted=0 AND (is_read & 1)=0', ['member'=>$member]);
+        $messages=(int)$smcFunc['db_fetch_row']($q)[0];$smcFunc['db_free_result']($q);
+        $q=$smcFunc['db_query']('', 'SELECT COUNT(*) FROM {db_prefix}topics AS t INNER JOIN {db_prefix}boards AS b ON b.id_board=t.id_board LEFT JOIN {db_prefix}log_topics AS lt ON lt.id_topic=t.id_topic AND lt.id_member={int:member} LEFT JOIN {db_prefix}log_mark_read AS lmr ON lmr.id_board=t.id_board AND lmr.id_member={int:member} WHERE {query_wanna_see_board} AND t.approved=1 AND COALESCE(lt.unwatched,0)=0 AND t.id_last_msg>COALESCE(lt.id_msg,0) AND t.id_last_msg>COALESCE(lmr.id_msg,0)', ['member'=>$member]);
+        $topics=(int)$smcFunc['db_fetch_row']($q)[0];$smcFunc['db_free_result']($q);
+        $q=$smcFunc['db_query']('', 'SELECT filename,attachment_type,id_attach FROM {db_prefix}attachments WHERE id_member={int:member} AND id_msg=0 ORDER BY id_attach DESC LIMIT 1', ['member'=>$member]);
+        $pic=$smcFunc['db_fetch_assoc']($q);$smcFunc['db_free_result']($q);$avatar=null;
+        if ($pic && (int)$pic['attachment_type']===1 && preg_match('/^[A-Za-z0-9_.-]+\.(png|gif|jpe?g|webp|svg)$/i',$pic['filename'])) $avatar='/forum/custom_avatar/'.rawurlencode($pic['filename']);
+        elseif ($pic && (int)$pic['attachment_type']===0) $avatar='/forum/index.php?action=dlattach;attach='.(int)$pic['id_attach'].';type=avatar';
+        header('Content-Type: application/json');header('Cache-Control: no-store');echo json_encode(['avatar'=>$avatar,'unreadMessages'=>$messages,'unreadTopics'=>$topics]);exit;
+    } catch (Throwable $e) {http_response_code(503);header('Content-Type: application/json');echo '{"error":"Forum status unavailable"}';exit;}
+}
 $db=$db_connection; $key=$data['key'];
 function lisp_bridge_query($sql,$params=[]) {
     global $db;

@@ -88,7 +88,20 @@ try:
     for slot,team in zip(sorted(item['inputs'],key=lambda x:x['slot']),teams):
         a.req(prefix+'/stage_items/'+str(item['id'])+'/inputs/'+str(slot['id']),{'team_id':team['id']},method='PUT')
     a.req(prefix+'/stages/activate',{'direction':'next'})
+    a.req(prefix+'/courts',{'name':'Validation game slot'})
+    a.req(prefix+'/schedule_matches',{})
     stages=a.req(prefix+'/stages')['data'];match=stages[0]['stage_items'][0]['rounds'][0]['matches'][0]
+    # The personal summary uses the player's mapped team in the actual schedule.
+    app.PERSONAL.cache.clear()
+    personal=p.req('/community-api/status')
+    assert personal['forumAvailable'] and personal['tournamentAvailable'],personal
+    assert personal['nextMatch']['matchId']==match['id'] and personal['nextMatch']['bracketId']==bid,personal
+    assert p.req('/community-api/status?user='+str(a.user['id']))==personal
+    assert personal['unreadMessages']==0 and isinstance(personal['unreadTopics'],int)
+    request=urllib.request.Request('http://127.0.0.1:8796/community-api/status',headers={'X-Forwarded-Proto':'https','Host':'localhost','X-Real-IP':'127.0.0.1'})
+    try:real_urlopen(request);raise AssertionError('Anonymous personal status allowed')
+    except urllib.error.HTTPError as e:assert e.code in (401,403)
+    print('PASS actual personal next match, forum counts, verified identity and anonymous rejection',flush=True)
     a.req(prefix+'/matches/'+str(match['id']),{'round_id':match['round_id'],'stage_item_input1_score':3,'stage_item_input2_score':1},method='PUT')
     ids=[match['stage_item_input1']['team_id'],match['stage_item_input2']['team_id']]
     p.denied('/community-api/finalize',{'id':ident,'podium':ids});a.denied('/community-api/finalize',{'id':ident,'podium':ids},csrf=False)
@@ -133,7 +146,7 @@ try:
     a.req('/community-api/delete',{'id':cancelled})
     print('PASS zero/one-player deletion, restore, cancelled forum publication, no awards and blocked edits',flush=True)
     print('PASS real elimination match and score, mapped teams, shared forum identity, both trophy views, idempotent final publication and privilege/CSRF restrictions',flush=True)
-    result={'passed':True,'environment':'private loopback validation databases; no production test accounts or events','voteChange':True,'tieAdminChoice':True,'automaticBracketCreation':True,'automaticTournamentThread':True,'realEliminationMatchScored':True,'accountSignupMapping':True,'confirmedPodiumTrophies':True,'duplicateFinalizationSafe':True,'sharedSmfIdentity':True,'playerRestrictions':True,'csrfRequired':True,'privateProfileDataExcluded':True,'zeroAndOnePlayerDeletion':True,'recoverableDeletion':True,'cancelledForumPublication':True,'cancelledNativeEditsBlocked':True,'nativeDeleteUsesCancellation':True,'missingNativeBracketRestored':True}
+    result={'passed':True,'environment':'private loopback validation databases; no production test accounts or events','voteChange':True,'tieAdminChoice':True,'automaticBracketCreation':True,'automaticTournamentThread':True,'personalNextMatchAndForumCounts':True,'personalIdentityAndAnonymousRejection':True,'realEliminationMatchScored':True,'accountSignupMapping':True,'confirmedPodiumTrophies':True,'duplicateFinalizationSafe':True,'sharedSmfIdentity':True,'playerRestrictions':True,'csrfRequired':True,'privateProfileDataExcluded':True,'zeroAndOnePlayerDeletion':True,'recoverableDeletion':True,'cancelledForumPublication':True,'cancelledNativeEditsBlocked':True,'nativeDeleteUsesCancellation':True,'missingNativeBracketRestored':True}
     pathlib.Path(os.environ['LISP_COMMUNITY_DIR']).joinpath('result.json').write_text(json.dumps(result,indent=2)+'\n')
 finally:
     http_server.shutdown();local.shutdown()

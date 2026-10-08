@@ -10,11 +10,15 @@ ROOT=P('/opt/lisp-forum')
 PATCHES={
  'Session.php': ("list ($sess_data) = $smcFunc['db_fetch_row']($result);", "list ($sess_data) = $smcFunc['db_fetch_row']($result) ?: array(null);"),
  'Load.php': ("list ($visitTime) = $smcFunc['db_fetch_row']($result);", "list ($visitTime) = $smcFunc['db_fetch_row']($result) ?: array(null);"),
+ 'Profile-Modify.php': ("'sig' . $memberContext[$context['id_member']]", "'sig' . (int) $context['id_member']"),
 }
 def pg(sql):
  return subprocess.check_output(['runuser','-u','postgres','--','psql','-X','-v','ON_ERROR_STOP=1','-h','/run/lisp-postgres','-p','5433','-d','lisp_forum','-Atc',sql],text=True).strip()
 def main():
  assert os.geteuid()==0,'Run as root'
+ # Avatar images are served by authenticated Nginx requests. Only this image
+ # directory needs traversal; private attachments and configuration stay private.
+ (ROOT/'custom_avatar').chmod(0o755)
  edits=[]
  for name,(old,new) in PATCHES.items():
   p=ROOT/'Sources'/name;s=p.read_text()

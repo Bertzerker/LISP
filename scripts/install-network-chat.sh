@@ -19,7 +19,7 @@ install -m 644 src/accounts.py src/account_client.py src/account_server.py /opt/
 install -m 644 web/index.html /srv/lan-party/site/index.html
 install -m 644 web/admin.html /srv/lan-party/site/admin/index.html
 printf 'window.LISP_GAME_HOST="%s";\n' "$LAN_HOST" > /srv/lan-party/site/server-info.js
-install -m 644 web/shell.js web/admin.js web/portal.css /srv/lan-party/site/
+install -m 644 web/shell.js web/personal-bar.js web/admin.js web/portal.css /srv/lan-party/site/
 install -m 644 web/servers.html /srv/lan-party/site/servers/index.html
 install -m 644 style/* /srv/lan-party/site/style/
 install -m 755 src/generate_index.py /usr/local/bin/lan-party-index

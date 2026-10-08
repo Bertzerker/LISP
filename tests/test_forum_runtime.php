@@ -22,4 +22,17 @@ foreach ([false, [123]] as $row) {
     eval($matches[0]);
     if ($visitTime !== ($row === false ? null : 123)) throw new RuntimeException('Last-visit result changed');
 }
-echo "PASS missing/existing/invalid sessions and missing/existing last-visit rows without warnings.\n";
+// Exercise the installed signature preview with a real member-context array.
+$source = file_get_contents('/opt/lisp-forum/Sources/Profile-Modify.php');
+if (!preg_match('/\$context\[\x27member\x27\]\[\x27signature_preview\x27\] = parse_bbc\([^;]+;/', $source, $matches)) throw new RuntimeException('Signature preview not found');
+function parse_bbc($text, $smileys, $cache_id, $tags) {
+    if ($cache_id !== 'sig1') throw new RuntimeException('Wrong signature cache identity');
+    return $text;
+}
+function get_signature_allowed_bbc_tags() { return []; }
+$context = ['id_member' => 1, 'member' => []];
+$memberContext = [1 => ['name' => 'Validation member']];
+$signature = 'Signature preview';
+eval($matches[0]);
+if ($context['member']['signature_preview'] !== $signature) throw new RuntimeException('Signature preview changed');
+echo "PASS sessions, last-visit rows and signature preview without warnings.\n";

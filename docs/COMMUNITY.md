@@ -57,3 +57,35 @@ Native Bracket Delete is routed through the same recoverable cancellation. Resto
 SMF asset minification is disabled because the theme CSS/scripts directories are intentionally read-only. The normal original assets remain available. The attachment directory setting is stored as a JSON object keyed by the selected directory ID, matching SMF 2.1's maintenance expectations. Two guarded assignments in `Sources/Session.php` and `Sources/Load.php` handle PostgreSQL's false return for missing session/last-visit rows without PHP warnings. The script refuses unexpected upstream source or unknown upload paths rather than overwriting them.
 
 `php -c /etc/lisp/community/forum-php.ini tests/test_forum_runtime.php` checks the installed missing/existing/invalid session behavior and missing/existing last-visit results. Fresh administrator login and five authenticated forum pages passed; error count and last error ID stayed at 180. Existing historical errors and failed-login audit entries are retained.
+
+## Personal activity bar — 2026-10-08
+
+Logged-in players see their forum avatar and name in the top bar, with links to
+their own starting/running game servers, unread visible forum topics, unread
+private messages and their next scheduled tournament match. Counts and match
+links refresh every 30 seconds while the page is visible. Only the verified
+account's information is returned; administrator status does not make the
+personal server count include other players. Match times come from scheduled
+Bracket matches for the account's mapped team. Unscheduled, draft, scored,
+cancelled and past matches are excluded. Unavailable services are labelled.
+
+Use **My profile → Change avatar** to open the native forum uploader. The
+supplied `avatar/avatar.png` was saved for admin through that uploader. Avatar
+images need a readable/traversable `custom_avatar` directory; installation and
+repair preserve mode 0755 for this image folder. Private attachments and
+configuration retain their restrictions. The native signature-preview cache
+now uses the numeric member ID, avoiding an array-to-string warning on profile
+saves. The home hero and top bar no longer show the coat of arms; sidebar
+branding is retained.
+
+Validation: 26 account/community/personal-status unit tests passed on Linux.
+Separate loopback SMF/Bracket databases passed actual next-match selection,
+forum counts, verified identity, anonymous rejection and the existing voting,
+deletion, restoration and trophy checks. Fresh authenticated HTTPS verified
+the saved PNG and status endpoint. The real browser showed two owned running
+servers; only the temporary Elite Force test was stopped. The player's Quake
+Live match stayed running. Isolated validation services were stopped.
+Installed PHP regression tests passed sessions, last visits and signature
+preview with warnings promoted to exceptions. Screenshot:
+`outputs/Personal-bar.png`; sanitized result:
+`outputs/Personal-bar-validation.json`.

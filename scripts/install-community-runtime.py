@@ -85,7 +85,7 @@ clear_env=yes
 security.limit_extensions=.php
 ''',group='lispcommunity')
  for d in ['cache','attachments','custom_avatar']:
-  directory('/opt/lisp-forum/'+d,'lanforum','lispcommunity')
+  directory('/opt/lisp-forum/'+d,'lanforum','lispcommunity',0o755 if d=='custom_avatar' else 0o750)
  directory('/var/lib/lisp-forum/sessions','lanforum','lispcommunity',0o700)
  settings=P('/opt/lisp-forum/Settings.php')
  if not settings.exists():

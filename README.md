@@ -22,6 +22,11 @@ after a verified dedicated-asset repair. MW3 needs licensed legacy Steam files. 
 
 This directory is the source project. `LISP.MD`, `GAMES.MD`, and `quake live.MD` are the original planning notes. Current implementation: download index, engine adapters for Quake Live, SoF2 Gold, Half-Life, Counter-Strike 1.6, Cross Product, Left 4 Dead 2, Jabroni Brawl, Team Fortress 2, Half-Life 2: Deathmatch, Unreal Tournament, UT2004, ET: Legacy and original Star Wars Battlefront II (2005), isolated instances, map discovery, player/mode/map/port selection, join/admin credentials, and a start/stop command. The portal now includes local browser/IRC chat, HTTPS administration, connected-device discovery, per-device/global Internet controls and bridge/separate interface setup with automatic rollback. All pages share left navigation, a central workspace and right chat panel with local pixel fonts and project icons.
 
+The personal top bar shows each player's forum avatar, own running servers,
+unread forum topics/messages and next scheduled tournament match. Avatar changes
+use the native forum uploader from **My profile**. See
+[community features](docs/COMMUNITY.md).
+
 ## Layout
 - `src/`: controller and download-page generator (Python standard library).
 - `web/`: portal, download navigation, server UI.

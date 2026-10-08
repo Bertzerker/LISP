@@ -1,0 +1,31 @@
+{
+  "game": "wolf2009",
+  "instances": [
+    {
+      "map": "mp_bank",
+      "mode": "objective",
+      "players": 8,
+      "port": 27015,
+      "joinPasswordAdvertised": true,
+      "configuredJoinPasswordVerified": true,
+      "lanQuery": true,
+      "wrongAndCorrectLanRcon": true,
+      "windowsLanQuery": true,
+      "windowsLanRconAuthentication": true
+    },
+    {
+      "map": "mp_canals",
+      "mode": "tdm",
+      "players": 8,
+      "port": 27016,
+      "joinPasswordAdvertised": true,
+      "configuredJoinPasswordVerified": true,
+      "lanQuery": true,
+      "wrongAndCorrectLanRcon": true,
+      "windowsLanQuery": true,
+      "windowsLanRconAuthentication": true
+    }
+  ],
+  "independentStopVerified": true,
+  "playerConnection": "not tested"
+}

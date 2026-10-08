@@ -2,6 +2,12 @@
 
 A local portal for game downloads, on-demand dedicated servers, player accounts, chat and a forum.
 
+Elite Force, Jedi Academy, Wolfenstein (2009) and Aliens vs Predator 2: Primal Hunt
+are now available in the launcher. Each passed two-instance engine and
+authenticated portal checks, with maps, modes, passwords and independent
+stopping. Player joining remains untested. See
+[setup and commands](docs/CLASSIC-GAMES.md).
+
 Modern Warfare 2 (IW4x), World at War, Black Ops and Black Ops II multiplayer
 (Plutonium) are available. Player connection tests for Black Ops and MW3 are
 skipped at the user’s request; server startup and administration still need to work.

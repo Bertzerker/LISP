@@ -77,3 +77,16 @@ switching checks passed. Game matches and account roles were not changed.
 Official Bracket and Simple Machines Forum 2.1.7 are deployed behind the existing bound LAN login. Game voting creates a tournament and maintains its forum thread. Portal signups map accounts to native players/teams; administrator-confirmed results publish automatically and grant profile trophies. General, Shooter and Strategy chat remain alongside the pages. The forum and post editor now use dark portal backgrounds, white text and cyan links. Separate-database integration tests passed a scored two-player elimination event, both trophy views and access/CSRF checks. See docs/COMMUNITY.md for operation and source/license details.
 
 Admin tournament deletion/restoration is implemented and validated for zero/one players. Cancellation publishes to the Tournament thread, blocks votes/signups/bracket edits, and gives no trophies. Finished awards remain protected.
+
+## Classic dedicated-server additions — 2026-10-08
+
+Elite Force (native cMod 1.30), Jedi Academy (native OpenJK), Wolfenstein 2009
+(patched Lite Server/Wine) and Primal Hunt (dedicated server/Wine plus supplied
+Master Server Patch 1.1) are enabled. All passed two-instance engine and
+authenticated portal launch/ownership/readiness/independent-stop checks.
+Windows LAN queries passed; incorrect/correct RCON passwords passed for Elite
+Force, Jedi Academy and Wolfenstein. Primal Hunt's native controller/join
+credentials were checked privately, and all six modes passed actual LAN queries.
+Its in-game controller authentication and actual player joining are untested.
+No firewall change; originals and all 17 previously available games preserved.
+See docs/CLASSIC-GAMES.md and outputs/Classic-games-status.md.

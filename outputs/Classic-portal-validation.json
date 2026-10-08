@@ -1,0 +1,87 @@
+{
+  "existingGamesPreserved": [
+    "crossproduct",
+    "cstrike",
+    "etlegacy",
+    "halflife",
+    "hl2dm",
+    "iw4x",
+    "jabroni",
+    "l4d2",
+    "quakelive",
+    "sof2",
+    "swbf2",
+    "t4",
+    "t5",
+    "t6",
+    "tf2",
+    "ut2004",
+    "ut99"
+  ],
+  "games": [
+    {
+      "game": "eliteforce",
+      "catalog": true,
+      "maps": 17,
+      "modes": [
+        "ffa",
+        "tdm",
+        "ctf"
+      ],
+      "twoPortalInstances": true,
+      "creatorOwnershipAndStop": true,
+      "independentStop": true,
+      "joinAndAdminGuidance": true
+    },
+    {
+      "game": "jka",
+      "catalog": true,
+      "maps": 23,
+      "modes": [
+        "ffa",
+        "duel",
+        "powerduel",
+        "tdm",
+        "siege",
+        "ctf"
+      ],
+      "twoPortalInstances": true,
+      "creatorOwnershipAndStop": true,
+      "independentStop": true,
+      "joinAndAdminGuidance": true
+    },
+    {
+      "game": "wolf2009",
+      "catalog": true,
+      "maps": 8,
+      "modes": [
+        "objective",
+        "stopwatch",
+        "tdm"
+      ],
+      "twoPortalInstances": true,
+      "creatorOwnershipAndStop": true,
+      "independentStop": true,
+      "joinAndAdminGuidance": true
+    },
+    {
+      "game": "avp2ph",
+      "catalog": true,
+      "maps": 36,
+      "modes": [
+        "dm",
+        "tdm",
+        "hunt",
+        "survivor",
+        "overrun",
+        "evac"
+      ],
+      "twoPortalInstances": true,
+      "creatorOwnershipAndStop": true,
+      "independentStop": true,
+      "joinAndAdminGuidance": true
+    }
+  ],
+  "ownedMatchesStopped": true,
+  "primalHuntDisabledAdminAndOpenJoining": true
+}

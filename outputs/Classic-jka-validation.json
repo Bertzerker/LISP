@@ -1,0 +1,31 @@
+{
+  "game": "jka",
+  "instances": [
+    {
+      "map": "mp/ffa1",
+      "mode": "ffa",
+      "players": 8,
+      "port": 27015,
+      "joinPasswordAdvertised": true,
+      "configuredJoinPasswordVerified": true,
+      "lanQuery": true,
+      "wrongAndCorrectLanRcon": true,
+      "windowsLanQuery": true,
+      "windowsLanRconAuthentication": true
+    },
+    {
+      "map": "mp/ctf1",
+      "mode": "ctf",
+      "players": 8,
+      "port": 27016,
+      "joinPasswordAdvertised": true,
+      "configuredJoinPasswordVerified": true,
+      "lanQuery": true,
+      "wrongAndCorrectLanRcon": true,
+      "windowsLanQuery": true,
+      "windowsLanRconAuthentication": true
+    }
+  ],
+  "independentStopVerified": true,
+  "playerConnection": "not tested"
+}

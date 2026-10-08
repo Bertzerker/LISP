@@ -36,6 +36,8 @@ initial-password.txt
 *.gz
 *.tar
 *.bin
+*.rez
+*.lto
 *.crdownload
 
 # Local runtimes and private server state

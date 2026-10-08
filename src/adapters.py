@@ -195,4 +195,12 @@ def registry():
     for ident in COD_GAMES:
         a=CodAdapter(ROOT,ident)
         if a.installed():games[a.id]=a
+    from classic_adapter import ClassicQuakeAdapter,DEFINITIONS as CLASSIC_GAMES
+    for ident in CLASSIC_GAMES:
+        a=ClassicQuakeAdapter(ROOT,ident)
+        if a.installed():games[a.id]=a
+    from classic_windows_adapter import Wolf2009Adapter,PrimalHuntAdapter
+    for cls in (Wolf2009Adapter,PrimalHuntAdapter):
+        a=cls(ROOT)
+        if a.installed():games[a.id]=a
     return games

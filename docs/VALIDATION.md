@@ -193,5 +193,18 @@ The continuation remains paused and its instructions now omit client tests.
 - All 84 generated download links exactly match the visible completed files in `/srv/lan-party/files`, including the newly uploaded emulator archive, Generals installer and Carmageddon files. Reload an already-open page after uploading; indexing runs about once a minute.
 - No website/game-controller restart, account change or firewall change was needed. Browser verification in the in-app browser was unavailable because it did not trust the LAN HTTPS certificate; the timer and generated file/link checks passed on the host.
 
+## Classic dedicated-server additions — 2026-10-08
+
+Elite Force (native cMod 1.30), Jedi Academy (native OpenJK), Wolfenstein 2009
+(patched Lite Server/Wine) and Primal Hunt (dedicated server/Wine plus supplied
+Master Server Patch 1.1) are enabled. All passed two-instance engine and
+authenticated portal launch/ownership/readiness/independent-stop checks.
+Windows LAN queries passed; incorrect/correct RCON passwords passed for Elite
+Force, Jedi Academy and Wolfenstein. Primal Hunt's native controller/join
+credentials were checked privately, and all six modes passed actual LAN queries.
+Its in-game controller authentication and actual player joining are untested.
+No firewall change; originals and all 17 previously available games preserved.
+See docs/CLASSIC-GAMES.md and outputs/Classic-games-status.md.
+
 - HTTP check before the ET: Legacy addition: 47 downloads passed HEAD/size and resumable-range checks. The 40 original entries are present under their original names except `AOE.iso`, now `Age of Empires Collection.iso`; its SHA-256 still matches the original transfer manifest. The source drive was unavailable for a new complete local checksum comparison.
 - Final service check: controller, nginx website, index timer and SFTP/SSH were active. No test matches remained running.

@@ -1,0 +1,75 @@
+{
+  "game": "avp2ph",
+  "instances": [
+    {
+      "map": "worlds/multi/dm/dm_aizin",
+      "mode": "dm",
+      "advertisedMode": "DM",
+      "players": 8,
+      "port": 27015,
+      "joinPasswordAdvertised": true,
+      "joinAndControllerPasswordConfigured": true,
+      "inGameAdminAuthentication": "not tested; requires a joined player",
+      "windowsLanQuery": true
+    },
+    {
+      "map": "worlds/multi/dm/dm_alesserfate",
+      "mode": "tdm",
+      "advertisedMode": "Team DM",
+      "players": 8,
+      "port": 27016,
+      "joinPasswordAdvertised": true,
+      "joinAndControllerPasswordConfigured": true,
+      "inGameAdminAuthentication": "not tested; requires a joined player",
+      "windowsLanQuery": true
+    }
+  ],
+  "additionalModes": [
+    {
+      "map": "worlds/multi/dm/dm_alley",
+      "mode": "hunt",
+      "advertisedMode": "Hunt",
+      "players": 8,
+      "port": 27015,
+      "joinPasswordAdvertised": true,
+      "joinAndControllerPasswordConfigured": true,
+      "inGameAdminAuthentication": "not tested; requires a joined player",
+      "windowsLanQuery": true
+    },
+    {
+      "map": "worlds/multi/survivor/suk-stronghold_ph",
+      "mode": "survivor",
+      "advertisedMode": "Survivor",
+      "players": 8,
+      "port": 27015,
+      "joinPasswordAdvertised": true,
+      "joinAndControllerPasswordConfigured": true,
+      "inGameAdminAuthentication": "not tested; requires a joined player",
+      "windowsLanQuery": true
+    },
+    {
+      "map": "worlds/multi/overrun/over_stronghold",
+      "mode": "overrun",
+      "advertisedMode": "Overrun",
+      "players": 8,
+      "port": 27015,
+      "joinPasswordAdvertised": true,
+      "joinAndControllerPasswordConfigured": true,
+      "inGameAdminAuthentication": "not tested; requires a joined player",
+      "windowsLanQuery": true
+    },
+    {
+      "map": "worlds/multi/evac/evac_hanger",
+      "mode": "evac",
+      "advertisedMode": "Evac",
+      "players": 8,
+      "port": 27015,
+      "joinPasswordAdvertised": true,
+      "joinAndControllerPasswordConfigured": true,
+      "inGameAdminAuthentication": "not tested; requires a joined player",
+      "windowsLanQuery": true
+    }
+  ],
+  "independentStopVerified": true,
+  "playerConnection": "not tested"
+}

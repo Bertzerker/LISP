@@ -20,7 +20,9 @@ install -m 644 src/adapters.py src/unreal_adapter.py src/etlegacy_adapter.py src
 install -m 644 src/portal.py /opt/lan-portal/portal.py
 install -m 755 src/generate_index.py /usr/local/bin/lan-party-index
 install -m 755 scripts/lan-server /usr/local/bin/lan-server
-install -m 644 web/index.html /srv/lan-party/site/index.html
+install -d -m 755 /srv/lan-party/site/login
+install -m 644 web/login.html /srv/lan-party/site/login/index.html
+install -m 644 web/login.js web/account-controls.js web/forum-account.js /srv/lan-party/site/
 install -m 644 web/servers.html /srv/lan-party/site/servers/index.html
 install -d -m 755 /srv/lan-party/site/my-servers
 install -m 644 web/my-servers.html /srv/lan-party/site/my-servers/index.html

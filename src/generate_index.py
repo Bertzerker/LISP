@@ -35,7 +35,7 @@ def render(node):
     return ''.join(parts), file_count
 
 contents, _ = render(tree)
-html = '''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>LAN Party Downloads</title><link rel="icon" type="image/png" href="/style/Coat%20of%20Arms.png"><link rel="stylesheet" href="/portal.css?v=20261008-personal"></head><body><div class="downloads"><h1>LAN Party Downloads</h1><p>Open a folder to browse games, emulators and patches. Select a file to download it.</p>'''
+html = '''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>LAN Party Downloads</title><link rel="icon" type="image/png" href="/style/Coat%20of%20Arms.png"><link rel="stylesheet" href="/portal.css?v=20261009-account"></head><body><div class="downloads"><h1>LAN Party Downloads</h1><p>Open a folder to browse games, emulators and patches. Select a file to download it.</p>'''
 html += '<label for="search">Find a download</label><input id="search" type="search" placeholder="Search filenames or folders…"><div class="button-row tree-controls"><button id="expand-folders" class="quiet" type="button">Expand all</button><button id="collapse-folders" class="quiet" type="button">Collapse all</button></div><div class="download-tree" aria-label="Download folders">'+contents+'</div>'
 html += '''<p id="empty" hidden>No matching downloads.</p><footer>LAN access only. Download links refresh automatically after new files are uploaded.</footer><script>
 (()=>{
@@ -60,7 +60,7 @@ html += '''<p id="empty" hidden>No matching downloads.</p><footer>LAN access onl
   scope.querySelector('#empty').hidden=matches!==0;
  });
 })();
-</script></div><script src="/auth.js"></script><script src="/shell.js?v=20261008-personal"></script></body></html>'''
+</script></div><script src="/auth.js"></script><script src="/shell.js?v=20261009-account"></script></body></html>'''
 tmp=root/'site/downloads/.index.html.tmp'
 tmp.write_text(html,encoding='utf-8')
 os.chmod(tmp,0o644)

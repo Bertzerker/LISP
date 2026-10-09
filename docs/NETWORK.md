@@ -1,6 +1,6 @@
 # Network & Internet Management
 
-Network administration is at `https://192.168.8.138/admin/`. Log in through Home with an administrator account first. The original administrator is named admin and retains the existing network-administration password. Accounts and sessions are bound to the actual LAN IP/MAC; players cannot access the network controls. Passwords set by an administrator must be changed on Home before accessing protected pages. Authentication and network configuration are not exposed over HTTP. See ACCOUNTS-FORUM.md for account management and recovery.
+Network administration is at `https://192.168.8.138/admin/`. Log in through `/login/` with an administrator account first. The original administrator is named admin and retains the existing network-administration password. Accounts and sessions are bound to the actual LAN IP/MAC; players cannot access the network controls. Passwords set by an administrator must be changed on the login screen before accessing protected pages. Authentication and network configuration are not exposed over HTTP. See ACCOUNTS-FORUM.md for account management and recovery.
 
 ## Current wiring
 

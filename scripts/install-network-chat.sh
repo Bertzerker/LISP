@@ -16,7 +16,9 @@ install -d -o root -g root -m 700 /var/lib/lisp-network /etc/lisp/tls
 install -d -m 755 /srv/lan-party/site/admin /srv/lan-party/site/style /opt/lan-portal
 install -m 644 src/chat.py src/chat_server.py src/admin_auth.py src/admin_server.py src/network_control.py /opt/lan-portal/
 install -m 644 src/accounts.py src/account_client.py src/account_server.py /opt/lan-portal/
-install -m 644 web/index.html /srv/lan-party/site/index.html
+install -d -m 755 /srv/lan-party/site/login
+install -m 644 web/login.html /srv/lan-party/site/login/index.html
+install -m 644 web/login.js web/account-controls.js web/forum-account.js /srv/lan-party/site/
 install -m 644 web/admin.html /srv/lan-party/site/admin/index.html
 printf 'window.LISP_GAME_HOST="%s";\n' "$LAN_HOST" > /srv/lan-party/site/server-info.js
 install -m 644 web/shell.js web/personal-bar.js web/admin.js web/portal.css /srv/lan-party/site/
@@ -58,5 +60,5 @@ systemctl enable --now lisp-network.service lisp-admin.service lisp-chat.service
 systemctl restart lisp-admin.service lisp-chat.service
 systemctl reload-or-restart lan-party-web.service
 echo "Portal updated. Secure network admin: https://$LAN_HOST/admin/"
-echo 'Log in on Home as admin using the existing network password or the initial password entered during bootstrap.'
+echo 'Log in at /login/ as admin using the existing network password or the initial password entered during bootstrap.'
 echo 'LAN topology is unchanged. Firewall listeners are managed separately.'

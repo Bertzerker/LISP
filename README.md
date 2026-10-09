@@ -39,7 +39,11 @@ after a verified dedicated-asset repair. MW3 needs licensed legacy Steam files. 
 
 This directory is the source project. `LISP.MD`, `GAMES.MD`, and `quake live.MD` are the original planning notes. Current implementation: download index, engine adapters for Quake Live, SoF2 Gold, Half-Life, Counter-Strike 1.6, Cross Product, Left 4 Dead 2, Jabroni Brawl, Team Fortress 2, Half-Life 2: Deathmatch, Unreal Tournament, UT2004, ET: Legacy and original Star Wars Battlefront II (2005), isolated instances, map discovery, player/mode/map/port selection, join/admin credentials, and a start/stop command. The portal now includes local browser/IRC chat, HTTPS administration, connected-device discovery, per-device/global Internet controls and bridge/separate interface setup with automatic rollback. All pages share left navigation, a central workspace and right chat panel with local pixel fonts and project icons.
 
-The personal top bar shows each player's forum avatar, own running servers,
+Home has been removed. Logged-in players open Downloads; guests use `/login/`.
+Log out and Change password are at the top of the forum. IRC connection codes
+are available in the chat sidebar.
+
+The personal top bar shows each player's name, role, IP, MAC, forum avatar and own running servers,
 unread forum topics/messages and next scheduled tournament match. Avatar changes
 use the native forum uploader through the top-bar avatar and forum profile. See
 [community features](docs/COMMUNITY.md).
@@ -86,7 +90,7 @@ L4D2 join passwords are disabled because its native password setting breaks conn
 ## Importing installed servers
 The import script takes the path to a Steam `steamapps/common` folder. It copies recognized dedicated-server installations into `/srv/lan-party/servers/templates`; it does not copy Steam login credentials. Each match gets independent files through filesystem reflinks where supported, with regular copies as fallback. Stop all instances before refreshing templates after a Steam update. The source archive contains no game binaries.
 
-The main portal installer does not change firewall rules. The separate Mumble installer adds LAN-only TCP/UDP 64738. On the current PC, UDP/TCP 27015–27050 (games and native RCON), and TCP 28015–28050 (Quake Live / 7 Days admin consoles) are allowed only from 192.168.8.0/24. Set equivalent LAN-scoped rules on another deployment. The portal uses HTTPS; HTTP redirects to it. Accounts are required for every page beyond Home and for direct downloads, chat, forum and server actions. Use the trusted local CA certificate. The installer does not open listener firewall ports; allow TCP 443 and TCP 6667 only from your trusted LAN if using secure administration and external IRC clients. Browser chat uses the existing website port. Its right-sidebar selector offers General, Shooter and Strategy, with matching authenticated IRC channels; see [chat](docs/CHAT.md).
+The main portal installer does not change firewall rules. The separate Mumble installer adds LAN-only TCP/UDP 64738. On the current PC, UDP/TCP 27015–27050 (games and native RCON), and TCP 28015–28050 (Quake Live / 7 Days admin consoles) are allowed only from 192.168.8.0/24. Set equivalent LAN-scoped rules on another deployment. The portal uses HTTPS; HTTP redirects to it. Accounts are required for every page beyond the login screen and for direct downloads, chat, forum and server actions. Use the trusted local CA certificate. The installer does not open listener firewall ports; allow TCP 443 and TCP 6667 only from your trusted LAN if using secure administration and external IRC clients. Browser chat uses the existing website port. Its right-sidebar selector offers General, Shooter and Strategy, with matching authenticated IRC channels; see [chat](docs/CHAT.md).
 
 Current test results and remaining engine limitations are recorded in `docs/VALIDATION.md`.
 
@@ -94,7 +98,7 @@ Current test results and remaining engine limitations are recorded in `docs/VALI
 
 Additional requirements: NetworkManager (`nmcli`, `busctl`), nftables, UFW, OpenSSL and dnsmasq. Upgrade an existing installation without restarting game matches with `sudo bash scripts/install-network-chat.sh`. The full installer also installs these components. The network helper does not change the current topology on installation.
 
-Log in on Home as **admin** with the existing network-administration password; then use `/accounts/` and `/admin/`. Trust the public certificate at `/style/lisp-lan-ca.crt` after checking its fingerprint locally. Fresh installations bind the administrator using `BOOTSTRAP_IP` and prompt for an initial password when there is no earlier administrator to migrate. Passwords and private TLS keys must never be copied into this source folder or shared archive.
+Log in at `/login/` as **admin** with the existing network-administration password; then use `/accounts/` and `/admin/`. Trust the public certificate at `/style/lisp-lan-ca.crt` after checking its fingerprint locally. Fresh installations bind the administrator using `BOOTSTRAP_IP` and prompt for an initial password when there is no earlier administrator to migrate. Passwords and private TLS keys must never be copied into this source folder or shared archive.
 
 Use a spare wired port for the managed LAN, or select two spare wired ports to bridge them. The management and upstream interfaces are protected. Review the plan, apply it, and confirm within the displayed rollback deadline. Clients must use the mini PC's managed gateway to be controlled. Devices using the existing router directly are listed for information only. See `docs/NETWORK.md` and `docs/CHAT.md`.
 
@@ -118,7 +122,7 @@ Wolfenstein: Enemy Territory is available through the official native ET: Legacy
 
 See [docs/ACCOUNTS-FORUM.md](docs/ACCOUNTS-FORUM.md). Players register with a name/password; the server observes and binds the actual LAN IP/MAC. Admins manage accounts, temporary passwords, roles and changed interface bindings. Sessions and unused IRC codes are revoked on changes. Only a game server's creator or an administrator can stop it; ownership is enforced by the backend. The forum contains General, Games, Servers, Tools and Emulators, with topics, replies and admin moderation. Chat uses the logged-in account name.
 
-`lisp-accounts.service` keeps credentials, sessions and forum state private. Only Home and appearance/login assets remain public. Existing unauthenticated API scripts need a bound account session and CSRF token; this includes old test helpers. The root-only `lisp-account-recovery` tool can restore a changed admin interface or reset a forgotten password without exposing secrets in command arguments. The source archive excludes all private databases, credentials and game files.
+`lisp-accounts.service` keeps credentials, sessions and forum state private. Only the login screen and appearance/login assets remain public. Existing unauthenticated API scripts need a bound account session and CSRF token; this includes old test helpers. The root-only `lisp-account-recovery` tool can restore a changed admin interface or reset a forgotten password without exposing secrets in command arguments. The source archive excludes all private databases, credentials and game files.
 
 The `lan-server` CLI now signs in with a local account and respects server ownership. From a bound player PC use `--url https://192.168.8.138 --ca <LAN-CA-file>`; when run over SSH it uses the connecting player PC's address. Passwords are entered at the prompt. Portal logos use the supplied 1024-pixel artwork and smooth resizing; the retro fonts and borders remain.
 

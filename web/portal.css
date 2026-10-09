@@ -57,3 +57,15 @@
 .mumble-panel{border-top:2px solid var(--line);margin-top:18px;padding-top:16px}.mumble-panel h2{font-size:12px;color:var(--cyan)}.mumble-channels,.mumble-channels ul{list-style:none;margin:8px 0;padding-left:14px}.mumble-channels{padding-left:0}.mumble-channels li{margin:8px 0;overflow-wrap:anywhere}.mumble-channels strong{color:var(--cyan);font-size:12px}.mumble-user{color:var(--ink);font-size:12px}.mumble-panel .join-button{margin-top:8px}
 
 .sidebar-tabs{display:flex;align-items:center;gap:4px}.sidebar-tabs button{font:inherit;border:0;box-shadow:none;background:transparent;color:var(--muted);padding:5px 6px;cursor:pointer}.sidebar-tabs button[aria-selected="true"]{background:var(--cyan);color:#10232a}.sidebar-tabs button:focus-visible{outline:2px solid var(--yellow);outline-offset:2px}.chat-heading{display:flex;justify-content:space-between;gap:8px;margin-bottom:12px;color:var(--cyan);font-size:12px}.chat-heading #chat-count{font-size:10px}.mumble-panel{border-top:0;margin-top:0;padding-top:0}
+
+/* Account identity stays visible on every portal page. */
+.personal-network{color:var(--muted);font-size:11px;overflow-wrap:anywhere}
+#personal-bar{flex-wrap:wrap;gap:8px 22px}
+.personal-links{flex:1 1 auto}
+.forum-account-controls{border-bottom:2px solid var(--line);padding:0 0 16px;margin-bottom:20px}
+.forum-account-controls .button-row{align-items:center;gap:24px}
+.forum-account-controls details{margin-top:12px}
+.forum-account-controls .admin-form{margin-top:12px}
+@media(max-width:600px){.personal-network{flex:1 1 160px;font-size:10px}.personal-links{flex-basis:100%}.forum-account-controls .admin-form label{min-width:100%}}
+
+.top-bar .personal-identity,.top-bar #personal-name{color:var(--cyan)!important}

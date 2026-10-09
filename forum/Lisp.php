@@ -44,13 +44,13 @@ function lisp_verify_password($name, $password, $unused=false) {
 function lisp_actions(&$actions) {
     foreach (['login','login2','logout','register','register2','reminder','activate'] as $action) $actions[$action]=['','lisp_home'];
 }
-function lisp_home() { header('Location: /'); exit; }
+function lisp_home() { header('Location: '.(($_REQUEST['action']??'')==='logout'?'/forum/index.php?account=logout':'/login/')); exit; }
 function lisp_profile_areas(&$areas) {
     global $context;
     $areas['info']['areas']['trophies']=['label'=>'Trophies', 'function'=>'lisp_trophies', 'icon'=>'stats', 'permission'=>['own'=>'is_not_guest','any'=>'profile_view']];
     // The portal owns credentials, display names and roles.
     foreach ($areas as &$section) foreach (['account','deleteaccount','groupmembership'] as $key) unset($section['areas'][$key]);
-    if (($_REQUEST['area']??'')==='account' || ($_REQUEST['area']??'')==='deleteaccount') lisp_home();
+    if (($_REQUEST['area']??'')==='account' || ($_REQUEST['area']??'')==='deleteaccount') { header('Location: /forum/index.php#change-password'); exit; }
 }
 function lisp_trophies() {
     global $context;
@@ -73,11 +73,11 @@ function lisp_theme() {
     if (defined('LISP_BRIDGE')) return;
     global $context;
     add_integration_function('integrate_sceditor_options','lisp_editor_options',false);
-    $context['html_headers'].='<link rel="stylesheet" href="/portal.css?v=20261008-personal"><link rel="stylesheet" href="/forum-portal.css?v=20261008"><script src="/auth.js" defer></script><script src="/shell.js?v=20261008-personal" defer></script>';
+    $context['html_headers'].='<link rel="stylesheet" href="/portal.css?v=20261009-account"><link rel="stylesheet" href="/forum-portal.css?v=20261008"><script src="/auth.js" defer></script><script src="/account-controls.js" defer></script><script src="/shell.js?v=20261009-account" defer></script><script src="/forum-account.js?v=20261009-account" defer></script>';
 }
 if (!defined('LISP_BRIDGE')) {
     try {
         $GLOBALS['lisp_account']=lisp_account_call(['op'=>'session','token'=>$_COOKIE['lisp_session']??'', 'ip'=>$_SERVER['REMOTE_ADDR']]);
         unset($_COOKIE['LISP_SMF']);
-    } catch (Throwable $e) { error_log('LISP forum session unavailable: '.$e->getMessage()); http_response_code(401); echo 'Log in on the LAN portal home page.'; exit; }
+    } catch (Throwable $e) { error_log('LISP forum session unavailable: '.$e->getMessage()); http_response_code(401); echo 'Log in to the LAN portal.'; exit; }
 }

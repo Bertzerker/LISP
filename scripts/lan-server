@@ -26,7 +26,7 @@ def request(base,path,data=None):
 try:
  response,session=request(authbase,'/auth-api/login',{'name':a.account or input('Portal account name: '),'password':getpass.getpass('Portal account password: ')})
  cookie=SimpleCookie(response.headers['Set-Cookie'])['lisp_session'].value
- if session['mustChange']:p.exit(1,'Change your temporary password on the portal Home page first.\n')
+ if session['mustChange']:p.exit(1,'Change your temporary password on the portal login screen first.\n')
  if a.action=='maps':path='/api/catalog';data=None
  elif a.action=='list':path='/api/servers';data=None
  elif a.action=='start':

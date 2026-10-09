@@ -46,7 +46,7 @@ Implemented Network \& Internet Management (HTTPS admin, mandatory initial passw
 
 ## Implementation update — 2026-10-06
 
-Local accounts now bind name/password login to the server-observed LAN IP and MAC. Administrators manage accounts, interface replacements and temporary passwords. Home is public; downloads, chat, forum, servers and network controls require login. Server owners and admins alone can stop matches. The persistent forum has General, Games, Servers, Tools and Emulators. See docs/ACCOUNTS-FORUM.md for operation, recovery and the limits of MAC identification.
+Local accounts now bind name/password login to the server-observed LAN IP and MAC. Administrators manage accounts, interface replacements and temporary passwords. The login screen is public; downloads, chat, forum, servers and network controls require login. Server owners and admins alone can stop matches. The persistent forum has General, Games, Servers, Tools and Emulators. See docs/ACCOUNTS-FORUM.md for operation, recovery and the limits of MAC identification.
 
 Modern Warfare 2 (IW4x), World at War, Black Ops and Black Ops II multiplayer are
 enabled after two-instance and authenticated portal tests. MW3 is staged but
@@ -137,3 +137,5 @@ See docs/SURVIVAL.md, docs/MY-SERVERS.md and outputs/Survival-status.md.
 
 Stopped entries also have owner/admin Delete entry and recoverable Restore on
 My Servers; deletion keeps saved worlds and never deletes Steam/game files.
+
+2026-10-09: removed the redundant portal Home page. Name, role, IP and MAC are in the shared top bar; Log out and Change password are in the forum. Downloads is the authenticated default page; `/login/` preserves login/registration and mandatory temporary-password changes.

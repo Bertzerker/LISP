@@ -26,8 +26,10 @@ async function refresh(){
  }finally{loading=false}
 }
 LISP.ready.then(user=>{
- if(!user||user.mustChange)return;
+ if(!user)return;
  $('personal-bar').hidden=false;$('top-guest').hidden=true;$('personal-name').textContent=user.name;
+ $('personal-network').textContent=`${user.role} · IP ${user.ip} · MAC ${user.mac}`;
+ document.querySelector('.personal-links').hidden=!!user.mustChange;
  $('personal-initial').textContent=user.name.slice(0,1).toUpperCase();
  $('personal-avatar').onerror=()=>{$('personal-avatar').hidden=true;$('personal-initial').hidden=false};
  refresh();timer=setInterval(refresh,30000);

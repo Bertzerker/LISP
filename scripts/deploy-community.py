@@ -40,7 +40,7 @@ def main():
     site=P('/srv/lan-party/site')
     for name in ['tournaments','profile','trophies','my-servers','servers']:
         (site/name).mkdir(exist_ok=True);install(ROOT/'web'/(name+'.html'),site/name/'index.html')
-    for name in ['tournaments.js','profile.js','trophies.js','community.css','forum-portal.css','forum-editor.css','shell.js','personal-bar.js','portal.css','servers.js','server-list.js','my-servers.js']:install(ROOT/'web'/name,site/name)
+    for name in ['account-controls.js','forum-account.js','tournaments.js','profile.js','trophies.js','community.css','forum-portal.css','forum-editor.css','shell.js','personal-bar.js','portal.css','servers.js','server-list.js','my-servers.js']:install(ROOT/'web'/name,site/name)
     for kind,name in [('http','community-http.conf'),('portal','community-locations.conf')]:
         directory=P('/etc/nginx/lisp-community')/kind;directory.mkdir(parents=True,exist_ok=True);install(ROOT/'config'/name,directory/'runtime.conf')
     run(['python3',str(ROOT/'scripts/package-bracket-source.py'),'/opt/lisp-bracket','/srv/lan-party/community-source'])

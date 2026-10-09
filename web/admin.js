@@ -11,7 +11,7 @@ function renderNetwork(){const n=networkState;adminElement('network-note').textC
 }
 async function networkAction(data){if(adminBusy)return;adminBusy=true;try{const x=await adminApi('network',data);adminMessage(x.message||'Network setting updated.');networkPlan=null;adminElement('plan-preview').hidden=true}catch(e){adminMessage(e.message,true)}finally{adminBusy=false;await refreshNetwork()}}
 adminElement('admin-logout').onclick=()=>LISP.logout();
-adminElement('show-password').onclick=()=>location.assign('/');
+adminElement('show-password').onclick=()=>location.assign('/forum/index.php#change-password');
 adminElement('admin-refresh').onclick=refreshNetwork;adminElement('internet-allow').onclick=()=>networkAction({op:'access',allowed:true});adminElement('internet-block').onclick=()=>networkAction({op:'access',allowed:false});
 adminElement('network-plan').onsubmit=async e=>{e.preventDefault();try{networkPlan=await adminApi('network',{op:'preview',mode:adminElement('network-mode').value,ports:[...adminElement('network-ports').querySelectorAll('input:checked')].map(x=>x.value)});adminElement('plan-summary').textContent=networkPlan.summary;adminElement('plan-preview').hidden=false;adminMessage('Review the plan before applying.')}catch(e){adminMessage(e.message,true)}};
 adminElement('apply-network').onclick=()=>{if(networkPlan)networkAction({op:'apply',plan:networkPlan.plan,confirm:'APPLY'})};adminElement('cancel-plan').onclick=()=>{networkPlan=null;adminElement('plan-preview').hidden=true};adminElement('confirm-network').onclick=()=>{if(networkState.pending)networkAction({op:'confirm',id:networkState.pending.id})};adminElement('rollback-network').onclick=()=>networkAction({op:'rollback'});

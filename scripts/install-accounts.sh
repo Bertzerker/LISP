@@ -13,8 +13,9 @@ install -m 644 config/lisp-accounts.service /etc/systemd/system/
 install -d /etc/systemd/system/lisp-accounts.service.d
 cp /etc/systemd/system/lisp-admin.service.d/zz-lisp-hosts.conf /etc/systemd/system/lisp-accounts.service.d/zz-lisp-hosts.conf
 printf 'Environment=LISP_ACCOUNT_NETWORKS=%s\n' "${LISP_ACCOUNT_NETWORKS:-192.168.8.0/24,10.42.0.0/24}" >> /etc/systemd/system/lisp-accounts.service.d/zz-lisp-hosts.conf
-install -d /srv/lan-party/site/accounts /srv/lan-party/site/forum
-install -m 644 web/auth.js web/home.js web/accounts.js web/forum.js /srv/lan-party/site/
+install -d /srv/lan-party/site/accounts /srv/lan-party/site/forum /srv/lan-party/site/login
+install -m 644 web/login.html /srv/lan-party/site/login/index.html
+install -m 644 web/auth.js web/login.js web/account-controls.js web/forum-account.js web/accounts.js web/forum.js /srv/lan-party/site/
 install -m 644 web/accounts.html /srv/lan-party/site/accounts/index.html
 install -m 644 web/forum.html /srv/lan-party/site/forum/index.html
 systemctl daemon-reload

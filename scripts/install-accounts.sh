@@ -6,7 +6,7 @@ cd "$(dirname "$0")/.."
 id lanadmin >/dev/null
 id lanserver >/dev/null
 install -d -o lanadmin -g lanserver -m 700 /var/lib/lisp-accounts
-install -m 644 src/accounts.py src/account_client.py src/account_server.py /opt/lan-portal/
+install -m 644 src/accounts.py src/account_client.py src/account_server.py src/credits.py /opt/lan-portal/
 install -m 755 scripts/account-recovery.py /usr/local/bin/lisp-account-recovery
 /usr/local/bin/lisp-account-recovery bootstrap --ip "$BOOTSTRAP_IP"
 install -m 644 config/lisp-accounts.service /etc/systemd/system/

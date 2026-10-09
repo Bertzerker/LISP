@@ -17,7 +17,9 @@ install -d -o "$UPLOAD_USER" -m 755 /srv/lan-party/files
 install -d -o lanserver -g lanserver /srv/lan-party/servers/instances /srv/lan-party/servers/quakelive /srv/lan-party/servers/steamcmd
 bash scripts/setup-steam-runtime.sh
 install -m 644 src/adapters.py src/unreal_adapter.py src/etlegacy_adapter.py src/zomboid_adapter.py src/sevendays_adapter.py src/swbf2_adapter.py src/run_swbf2.py src/cod_adapter.py src/run_cod.py src/classic_adapter.py src/classic_windows_adapter.py src/steam_extras_adapter.py src/rez_index.py src/run_classic_wine.py /opt/lan-portal/
-install -m 644 src/portal.py /opt/lan-portal/portal.py
+install -m 644 src/portal.py src/credits.py src/server_metrics.py src/engine_exec.py src/network_meter.py /opt/lan-portal/
+install -d /etc/systemd/system/lisp-network-meter.service.d
+printf '[Service]\nEnvironment=LISP_METER_NETWORKS=%s\n' "$LAN_CIDR" > /etc/systemd/system/lisp-network-meter.service.d/network.conf
 install -m 755 src/generate_index.py /usr/local/bin/lan-party-index
 install -m 755 scripts/lan-server /usr/local/bin/lan-server
 install -d -m 755 /srv/lan-party/site/login

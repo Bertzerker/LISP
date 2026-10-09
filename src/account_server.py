@@ -4,6 +4,7 @@ from http.server import BaseHTTPRequestHandler,ThreadingHTTPServer
 from urllib.parse import urlparse,parse_qs
 from accounts import Accounts,interfaces
 from account_client import cookie
+from credits import controller_peer
 
 AUTH=Accounts(os.environ.get('LISP_ACCOUNTS_DIR','/var/lib/lisp-accounts'))
 HOSTS=set(os.environ.get('LISP_ALLOWED_HOSTS','192.168.8.138,10.42.0.1,127.0.0.1,localhost').split(','))
@@ -24,7 +25,8 @@ class Handler(BaseHTTPRequestHandler):
                 self.user(admin=url.path.endswith('admin'));self.reply(204);return
             if url.path=='/auth-api/session':self.reply(200,self.user(allow_change=True));return
             user=self.user()
-            if url.path=='/auth-api/accounts':self.user(admin=True);self.reply(200,{'users':AUTH.users(),'interfaces':interfaces()})
+            if url.path=='/auth-api/accounts':self.user(admin=True);self.reply(200,{'users':[{**u,**AUTH.credit_status(u['id'])} for u in AUTH.users()],'interfaces':interfaces(),'creditPolicy':AUTH.credit_policy()})
+            elif url.path=='/auth-api/credits':self.reply(200,AUTH.credit_status(user['id'],history=True))
             elif url.path=='/auth-api/forum':
                 if 'topic' in q:self.reply(200,AUTH.topic(int(q['topic'][0])))
                 elif 'board' in q:self.reply(200,{'topics':AUTH.topics(int(q['board'][0]))})
@@ -50,6 +52,7 @@ class Handler(BaseHTTPRequestHandler):
             elif self.path=='/auth-api/logout':AUTH.logout(cookie(self.headers));self.reply(200,{'loggedOut':True},'')
             elif self.path=='/auth-api/irc-code':self.reply(200,AUTH.irc_ticket(user))
             elif self.path=='/auth-api/accounts':self.reply(200,AUTH.manage(user,data))
+            elif self.path=='/auth-api/credits':self.reply(200,AUTH.manage_credits(user,data))
             elif self.path=='/auth-api/forum':
                 if os.path.exists('/var/lib/lisp-accounts/forum-migrated.json'):raise ValueError('The forum has moved to /forum/. Please refresh the portal.')
                 self.reply(200,AUTH.post(user,data))
@@ -59,7 +62,7 @@ class Handler(BaseHTTPRequestHandler):
         except Exception:self.reply(503,{'error':'Account operation failed; check the private service journal.'})
 class Local(socketserver.StreamRequestHandler):
     def handle(self):
-        uid=struct.unpack('3i',self.request.getsockopt(socket.SOL_SOCKET,socket.SO_PEERCRED,12))[1]
+        pid,uid,gid=struct.unpack('3i',self.request.getsockopt(socket.SOL_SOCKET,socket.SO_PEERCRED,12))
         def app_uid(name):
             try:return pwd.getpwnam(name).pw_uid
             except KeyError:return -1
@@ -73,6 +76,10 @@ class Local(socketserver.StreamRequestHandler):
             elif data['op']=='irc-login':
                 if uid not in (0,app_uid('lanserver')):raise PermissionError('Unsupported client.')
                 token,result=AUTH.irc_login(data.get('name'),data.get('code'),data.get('ip'));result['token']=token
+            elif data['op'] in ('credit-authorize','credit-charge','credit-status') and uid in (0,app_uid('lanserver')) and controller_peer(uid,pid):
+                if data['op']=='credit-authorize':result=AUTH.credit_authorize(data.get('ownerId'),data.get('runId'),data.get('serverId'))
+                elif data['op']=='credit-charge':result=AUTH.credit_charge(data)
+                else:result=AUTH.credit_status(data.get('ownerId'))
             elif data['op']=='community-users' and uid in (0,app_uid('lancommunity')):result={'users':AUTH.community_users()}
             elif data['op']=='verify-password' and uid in (0,app_uid('lanforum')):
                 user=AUTH.session(data.get('token',''),data.get('ip'))

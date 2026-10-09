@@ -1,0 +1,19 @@
+[Unit]
+Description=LISP game server network byte counters
+After=network.target
+Before=lan-portal.service
+[Service]
+ExecStart=/usr/bin/python3 -u /opt/lan-portal/network_meter.py
+RuntimeDirectory=lisp-network-meter
+RuntimeDirectoryMode=0750
+Group=lanserver
+Restart=on-failure
+NoNewPrivileges=true
+CapabilityBoundingSet=CAP_NET_ADMIN
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+MemoryMax=64M
+TasksMax=32
+[Install]
+WantedBy=multi-user.target

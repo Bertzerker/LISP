@@ -1,11 +1,16 @@
 [Unit]
 Description=LISP game server controller
-After=network.target
+After=network.target lisp-accounts.service lisp-network-meter.service
+Wants=lisp-network-meter.service
 [Service]
 User=lanserver
 Group=lanserver
 WorkingDirectory=/srv/lan-party/servers
 Environment=HOME=/srv/lan-party/servers
+Environment=LISP_MONITOR_ENABLED=1
+Delegate=yes
+CPUAccounting=yes
+ProtectControlGroups=no
 ExecStart=/usr/bin/python3 -u /opt/lan-portal/portal.py
 Restart=on-failure
 KillMode=mixed

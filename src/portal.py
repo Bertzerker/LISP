@@ -3,9 +3,11 @@ import json,os,re,shutil,signal,socket,subprocess,threading,time,uuid,pty,fcntl,
 from http.server import BaseHTTPRequestHandler,ThreadingHTTPServer
 from urllib.parse import urlparse
 from adapters import ROOT,registry,private_file
-from account_client import check
+from account_client import check,call
+from server_metrics import EngineMeter
 PORTS=range(27015,27051)
 MAX_SERVERS=6
+MONITOR_ENABLED=os.environ.get("LISP_MONITOR_ENABLED")=="1"
 ALLOWED_HOSTS=set(os.environ.get('LISP_ALLOWED_HOSTS','192.168.8.138,127.0.0.1,localhost').split(','))
 lock=threading.RLock();instances={};records={}
 RECORDS=ROOT/'records'
@@ -33,6 +35,61 @@ def password(value):
     if not isinstance(value,str) or not re.fullmatch(r'[A-Za-z0-9 !@#$%^&*()_+=.,:?-]{0,64}',value):
         raise ValueError('Passwords may use up to 64 letters, numbers, spaces and !@#$%^&*()_+=.,:?- (no quotes, slashes or semicolons).')
     return value
+
+def load_details(item,actor):
+    value={'load':item.get('load'),'loadError':item.get('loadError')}
+    if permitted(item['public'],actor):value['billing']=item.get('credit')
+    return value
+
+def pending_usage(data):
+    directory=ROOT/'usage-pending';directory.mkdir(mode=0o700,exist_ok=True);directory.chmod(0o700)
+    path=directory/(data['runId']+'.json');temporary=path.with_suffix('.tmp');private_file(temporary,json.dumps(data)+'\n');temporary.replace(path)
+    return path
+
+def settle_pending():
+    for path in (ROOT/'usage-pending').glob('*.json'):
+        try:
+            data=json.loads(path.read_text());call(data);path.unlink()
+        except Exception:pass
+
+def sample_usage(ident,item,final=False):
+    cpu,rx,tx,load=item['meter'].sample()
+    item['load']=load;item.pop('loadError',None)
+    data={'op':'credit-charge','runId':item['runId'],'serverId':ident,'cpuUs':cpu,'rxBytes':rx,'txBytes':tx}
+    pending=pending_usage(data);value=call(data);pending.unlink(missing_ok=True)
+    policy=value['creditPolicy']
+    value['tokensPerHour']=round(load['cpuAveragePercent']/100*60/policy['cpuMinutesPerToken']+load['networkAverageBytesPerSecond']*3600/(policy['networkGiBPerToken']*1073741824),6) if not value['creditExempt'] else 0
+    item['credit']=value
+    if final:
+        record=json.loads(json.dumps(records[ident]));record['lastLoad']=load;record['lastBilling']=value;save_record(ident,record)
+    return value
+
+def monitor_tick():
+    exhausted=set()
+    with lock:
+        settle_pending()
+        for ident,item in list(instances.items()):
+            if not item.get('meter'):continue
+            try:
+                value=sample_usage(ident,item)
+                if value['limitReached']:exhausted.add(item['public']['ownerId'])
+                item.pop('monitorFailureSince',None)
+            except Exception:
+                item['loadError']='Usage monitoring unavailable; accounting is delayed.'
+                since=item.setdefault('monitorFailureSince',time.monotonic())
+                if time.monotonic()-since>=30 and not (item.get('credit') or {}).get('creditExempt'):exhausted.add(item['public']['ownerId'])
+        for ident,item in list(instances.items()):
+            if item['public']['ownerId'] in exhausted:
+                try:
+                    record=json.loads(json.dumps(records[ident]));record['public']['stopReason']='Credit limit reached or usage monitoring unavailable. Add credits or ask an admin before restarting.';save_record(ident,record)
+                    stop(ident)
+                except Exception:print('Could not save/stop metered instance '+ident,flush=True)
+
+def monitor_loop():
+    while True:
+        time.sleep(5)
+        monitor_tick()
+
 
 def valid_port(adapter,port):
     if type(port) is not int or port not in PORTS:return False
@@ -71,10 +128,10 @@ def listing(actor=None):
             now=time.monotonic()
             if info is not None:item['lastInfo']=info;item['lastReady']=now
             elif code is None and now-item.get('lastReady',0)<20:info=item.get('lastInfo')
-            result.append({**item['public'],'canStop':permitted(item['public'],actor),'canRestart':permitted(item['public'],actor),'canDelete':False,'canChangePort':False,'status':'running' if info is not None else ('starting' if code is None else 'failed'),'connected':info.get('clients') if info else None,'currentMap':info.get('mapname',item['public']['map']) if info else item['public']['map'],'exitCode':code})
+            result.append({**item['public'],**load_details(item,actor),'canStop':permitted(item['public'],actor),'canRestart':permitted(item['public'],actor),'canDelete':False,'canChangePort':False,'status':'running' if info is not None else ('starting' if code is None else 'failed'),'connected':info.get('clients') if info else None,'currentMap':info.get('mapname',item['public']['map']) if info else item['public']['map'],'exitCode':code})
         for ident,record in records.items():
             if ident not in instances:
-                row={**record['public'],'canStop':False,'canRestart':permitted(record['public'],actor),'canDelete':permitted(record['public'],actor),'canChangePort':False,'status':'stopped','connected':0,'currentMap':record['public']['map'],'exitCode':None}
+                row={**record['public'],'load':record.get('lastLoad'),**({'billing':record.get('lastBilling')} if permitted(record['public'],actor) else {}),'canStop':False,'canRestart':permitted(record['public'],actor),'canDelete':permitted(record['public'],actor),'canChangePort':False,'status':'stopped','connected':0,'currentMap':record['public']['map'],'exitCode':None}
                 if permitted(record['public'],actor):
                     adapter=installed.get(record['public']['gameId'])
                     if adapter:
@@ -108,6 +165,10 @@ def start(data,actor,existing=None):
         if adapter.engine in ('zomboid','sevendays'):
             world=data.get('world','new')
             if world!='new' and any(i['public'].get('worldId')==world for i in active):raise ValueError('That world is already running. Choose another world.')
+        owner_id=existing['public']['ownerId'] if existing else actor['id']
+        run_id=uuid.uuid4().hex
+        if MONITOR_ENABLED:settle_pending()
+        credit=call({'op':'credit-authorize','ownerId':owner_id,'runId':run_id,'serverId':existing['public']['id'] if existing else None}) if MONITOR_ENABLED else None
         port=choose_port(adapter,data.get('port'))
         ident=existing['public']['id'] if existing else uuid.uuid4().hex[:12];home=ROOT/'instances'/ident
         if existing and home.exists():
@@ -121,12 +182,15 @@ def start(data,actor,existing=None):
             archive=ROOT/'retired-instances';archive.mkdir(mode=0o700,exist_ok=True)
             home.rename(archive/(ident+'-'+uuid.uuid4().hex[:8]))
         home.mkdir(mode=0o700,parents=True)
+        meter=None
         try:
+            if MONITOR_ENABLED:meter=EngineMeter(ident,adapter.reserved_ports(port),run_id)
             if hasattr(adapter,'prepare_request'):
                 data={**data,'_actor':{'id':actor['id'],'role':actor['role']}}
                 if adapter.engine=='cod':data={**data,'_queryClients':[actor['ip']]}
                 args,cwd=adapter.prepare_request(home,port,mode,level,players,join,admin,ids,mutators,data)
             else:args,cwd=adapter.prepare(home,port,mode,level,players,join,admin,ids,mutators)
+            if meter:args=meter.command(args)
             log=(home/'server.log').open('ab');os.chmod(home/'server.log',0o600)
             child_env=os.environ.copy()
             if adapter.id in ('l4d2','tf2','hl2dm'):
@@ -154,13 +218,15 @@ def start(data,actor,existing=None):
             else:
                 proc=subprocess.Popen(args,cwd=cwd,env=child_env,stdin=subprocess.PIPE if adapter.engine=='zomboid' else subprocess.DEVNULL,stdout=log,stderr=subprocess.STDOUT,start_new_session=True)
         except Exception:
+            if meter:meter.close()
             shutil.rmtree(home);raise
         public={'id':ident,'game':adapter.name,'gameId':game,'mode':mode,'modeName':adapter.modes()[mode],'players':players,'map':level,'port':port,'started':int(time.time()),'passwordProtected':bool(join),'adminEnabled':bool(admin or ids),'mutators':mutators,'adminKind':'steamid-zmq' if adapter.engine=='quake' else 'unreal' if adapter.engine=='unreal' else 'swbf2' if adapter.engine=='swbf2' else 'etlegacy' if adapter.id=='etlegacy' else 'zomboid' if adapter.id=='zomboid' else 'rcon','inGameAdminEnabled':bool(ids) if adapter.engine=='quake' else bool(admin),'adminPort':(port+1000 if adapter.engine=='quake' else port) if admin else None}
         if hasattr(adapter,'public_details'):public.update(adapter.public_details())
+        public['billingRunId']=run_id
         public.update(ownerId=existing['public']['ownerId'] if existing else actor['id'],ownerName=existing['public']['ownerName'] if existing else actor['name'])
         preset={k:v for k,v in data.items() if not k.startswith('_')};preset['port']=port
         if public.get('worldId'):preset['world']=public['worldId']
-        instances[ident]={'public':public,'process':proc,'adapter':adapter,'port':port,'home':home,'log':log}
+        instances[ident]={'public':public,'process':proc,'adapter':adapter,'port':port,'home':home,'log':log,'meter':meter,'runId':run_id,'credit':credit}
         try:save_record(ident,{'public':public,'launch':preset})
         except Exception:
             stop(ident,actor);raise
@@ -181,6 +247,10 @@ def stop(ident,actor=None):
                 try:proc.wait(timeout=8)
                 except subprocess.TimeoutExpired:os.killpg(proc.pid,signal.SIGKILL);proc.wait(timeout=3)
         if hasattr(item['adapter'],'after_stop'):item['adapter'].after_stop()
+        if item.get('meter'):
+            try:sample_usage(ident,item,final=True)
+            except Exception:print('Final usage accounting pending for '+ident,flush=True)
+            item['meter'].close()
         item['log'].close()
         home=item['home'].resolve()
         if home.parent!=(ROOT/'instances').resolve() or home.name!=ident:raise RuntimeError('Invalid instance cleanup path')
@@ -254,7 +324,7 @@ class Handler(BaseHTTPRequestHandler):
         try:
             actor=check(self.headers)
             if self.path=='/api/catalog':self.reply(200,{'games':[catalog_for(a,actor) for a in registry().values()],'maxServers':MAX_SERVERS,'ports':list(PORTS)})
-            elif self.path=='/api/servers':self.reply(200,{'servers':listing(actor),'deletedServers':deleted_listing(actor)})
+            elif self.path=='/api/servers':self.reply(200,{'servers':listing(actor),'deletedServers':deleted_listing(actor),'credits':call({'op':'credit-status','ownerId':actor['id']}) if MONITOR_ENABLED else None})
             else:self.reply(404,{'error':'Not found'})
         except PermissionError as e:self.reply(401,{'error':str(e)})
     def do_POST(self):
@@ -292,5 +362,6 @@ if __name__=='__main__':
         raise SystemExit(0)
     signal.signal(signal.SIGTERM,shutdown)
     signal.signal(signal.SIGINT,shutdown)
+    if MONITOR_ENABLED:threading.Thread(target=monitor_loop,daemon=True).start()
     ThreadingHTTPServer(('127.0.0.1',8787),Handler).serve_forever()
 

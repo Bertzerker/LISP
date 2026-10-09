@@ -68,3 +68,6 @@ survival-tests/
 *.class
 
 deleted-records/
+
+usage-pending/
+credit-tests/

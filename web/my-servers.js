@@ -38,6 +38,7 @@ async function refresh(force=false){
  if(refreshing||(!force&&document.activeElement?.closest?.('.port-settings')))return;refreshing=true;
  try{
   const data=await LISP.request('/api/servers');
+  if(data.credits){const credit=data.credits;$('credit-summary').textContent=credit.creditExempt?'Admin account · servers are free':`${Number(credit.creditTokenBalance).toFixed(6)} Credit Tokens · negative limit ${credit.creditPolicy.negativeLimit} · ${credit.canStartPaidServer?'Servers can start':'Credit limit reached — ask an admin for tokens'}`}
   render('owned-servers',LISPServerList.owned(data.servers,user),'You have no servers. Start one from Game Servers.');
   const deleted=data.deletedServers||[];$('deleted-section').hidden=!deleted.length;render('deleted-servers',deleted,'No deleted entries.');
   $('other-servers-section').hidden=user.role!=='admin';

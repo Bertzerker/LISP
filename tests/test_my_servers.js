@@ -12,7 +12,7 @@ class Element{
  walk(){return this.children.flatMap(el=>[el,...el.walk()])}
 }
 function context(user,servers){
- const elements={};for(const id of ['message','owned-servers','other-servers','other-servers-section','deleted-section','deleted-servers'])elements[id]=new Element('div');
+ const elements={};for(const id of ['credit-summary','message','owned-servers','other-servers','other-servers-section','deleted-section','deleted-servers'])elements[id]=new Element('div');
  const calls=[];let deleted=[];const ctx={window:{},location:{hostname:'192.168.8.138'},document:{hidden:false,createElement:tag=>new Element(tag),getElementById:id=>elements[id],addEventListener:()=>{}},LISP:{ready:Promise.resolve(user),request:async(url,data)=>{calls.push({url,data});if(data){const id=url.split('/')[3];const action=url.split('/')[4];if(action==='port'){servers=servers.map(s=>s.id===id?{...s,port:data.port===null?27017:data.port,portBusy:false,portOptions:(s.portOptions||[]).map(o=>({...o,available:o.port!==27015}))}:s)}else if(action==='delete'){deleted.push({...servers.find(s=>s.id===id),status:'deleted',canStop:false,canRestart:false,canDelete:false,canRestore:true});servers=servers.filter(s=>s.id!==id)}else if(action==='restore'){servers.push({...deleted.find(s=>s.id===id),status:'stopped',canRestart:true,canDelete:true,canRestore:false});deleted=deleted.filter(s=>s.id!==id)}else servers=servers.map(s=>s.id===id?{...s,status:action==='stop'?'stopped':'running',canStop:action!=='stop',canRestart:true,canDelete:action==='stop'}:s);return {stopped:action==='stop',port:action==='port'?(data.port===null?27017:data.port):undefined}}return {servers,deletedServers:deleted}}},setInterval:()=>1,clearInterval:()=>{}};
  ctx.window.addEventListener=()=>{};vm.createContext(ctx);vm.runInContext(fs.readFileSync(path.join(root,'web/server-list.js'),'utf8'),ctx);ctx.LISPServerList=ctx.window.LISPServerList;
  return {ctx,elements,calls};
@@ -45,6 +45,9 @@ async function main(){
  await portForm.onsubmit({preventDefault(){}});await flush();assert.equal(edit.calls.find(c=>c.data).url,'/api/servers/port-owner/port');assert.equal(edit.calls.find(c=>c.data).data.port,27017);portCard=edit.elements['owned-servers'].children[0];assert.equal(portCard.querySelector('button.restart').disabled,false);assert.equal(portCard.querySelector('button.stop'),null,'Saving a port never starts the server');assert.match(edit.elements.message.textContent,/Port saved: 27017/);
  assert.equal(edit.ctx.LISPServerList.card(portRow).querySelector('button.change-port'),null,'Port editing is only on My Servers');
  await portCard.querySelector('button.restart').onclick();await flush();assert.equal(edit.elements['owned-servers'].children[0].querySelector('button.change-port'),null,'No editing while running');
+ const measured={...server('measured',2),load:{cpuPercent:12.3,cpuAveragePercent:10,rxBytesPerSecond:2048,txBytesPerSecond:4096,averageWindowSeconds:60},billing:{creditExempt:false,chargedTokens:.25,tokensPerHour:.1}};
+ const measuredCard=a.ctx.LISPServerList.card(measured);const texts=measuredCard.walk().map(e=>e.textContent).join(' ');assert.match(texts,/CPU 12.3%/);assert.match(texts,/average 10.0%/);assert.match(texts,/Network ↓ 2.0 KiB\/s · ↑ 4.0 KiB\/s/);assert.match(texts,/0.250000 tokens/);
+ const freeCard=a.ctx.LISPServerList.card({...measured,billing:{creditExempt:true}});assert(freeCard.walk().some(e=>e.textContent==='Admin server · no token charge'));
  console.log('PASS stopped port change, busy-port controls and My Servers: own/other accounts, admin controls, no public stop/dismiss, Join preserved, retained stopped entries, restart, Delete/Restore and empty state');
 }
 main().catch(error=>{console.error(error);process.exitCode=1});

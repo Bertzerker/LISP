@@ -31,7 +31,9 @@ def interface(address):
     if len(rows)!=1:raise PermissionError('Your interface is not visible yet. Reconnect to the LAN and try again.')
     return rows[0]
 
-class Accounts:
+from credits import Credits
+
+class Accounts(Credits):
     def __init__(self,folder,lookup=interface):
         self.folder=Path(folder);self.folder.mkdir(parents=True,exist_ok=True);self.folder.chmod(0o700)
         self.lookup=lookup;self.lock=threading.RLock();self.attempts={};self.post_times={}
@@ -46,6 +48,7 @@ CREATE TABLE IF NOT EXISTS audit(id INTEGER PRIMARY KEY,actor INTEGER,action TEX
 CREATE TABLE IF NOT EXISTS irc_tickets(token TEXT PRIMARY KEY,user_id INTEGER,expires REAL,ip TEXT,mac TEXT);
 ''')
             for i,name in enumerate(BOARDS,1):c.execute('INSERT OR IGNORE INTO boards VALUES(?,?)',(i,name))
+        self.init_credits()
         (self.folder/'accounts.sqlite3').chmod(0o600)
     @contextmanager
     def db(self):

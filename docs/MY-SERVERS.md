@@ -48,3 +48,7 @@ The page refreshes every 10 seconds while visible; the top bar every 30 seconds.
 Tests cover ownership, secrets, durable records, limits, Stop/Restart controls
 and stopped-server port changes, including related socket collisions.
 See [Survival servers](SURVIVAL.md) for game versions and native admin differences.
+
+Server cards also show measured CPU and LAN network load, session cost and own
+Credit Token balance. A credit-limit stop retains the world and entry. See
+[load and credits](CREDITS-AND-LOAD.md) for the charging formula and admin setup.

@@ -15,7 +15,7 @@ install -d -o lanadmin -g lanadmin -m 700 /var/lib/lisp-admin
 install -d -o root -g root -m 700 /var/lib/lisp-network /etc/lisp/tls
 install -d -m 755 /srv/lan-party/site/admin /srv/lan-party/site/style /opt/lan-portal
 install -m 644 src/chat.py src/chat_server.py src/admin_auth.py src/admin_server.py src/network_control.py /opt/lan-portal/
-install -m 644 src/accounts.py src/account_client.py src/account_server.py /opt/lan-portal/
+install -m 644 src/accounts.py src/account_client.py src/account_server.py src/credits.py /opt/lan-portal/
 install -d -m 755 /srv/lan-party/site/login
 install -m 644 web/login.html /srv/lan-party/site/login/index.html
 install -m 644 web/login.js web/account-controls.js web/forum-account.js /srv/lan-party/site/

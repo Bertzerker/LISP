@@ -161,3 +161,15 @@ heavy survival engines. No firewall or account changes were made.
 
 See docs/MY-SERVERS.md, outputs/Server-port-live.json and
 outputs/Server-port-change.png.
+
+## Game server load and Credit Tokens — 2026-10-09
+
+Server cards show per-engine CPU/current and average LAN traffic. Player server
+usage charges local Credit Tokens; admin-owned servers are free. Accounts has
+manual audited top-ups and, at the bottom, CPU/network token-worth settings and
+the maximum negative balance. Reaching that shared floor saves/stops the owner's
+servers without deleting worlds or entries. Thirty Linux tests, UI fixtures,
+real separate CPU/LAN counters, player charging/admin exemption, browser top-up
+and automatic credit-floor stop passed. Existing accounts and baseline entries
+remain; no firewall permissions changed. No real payment service is connected.
+See docs/CREDITS-AND-LOAD.md and outputs/Credit-load-live.json.

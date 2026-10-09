@@ -7,7 +7,7 @@ function modes(){const g=game();$('mode').disabled=false;$('map').disabled=false
 function playerLimit(){const m=game().modes.find(x=>x.id===$('mode').value);const old=$('players').value;$('players').replaceChildren();for(const p of m.players)option($('players'),p,p);$('players').value=m.players.includes(Number(old))?old:String(m.players.includes(8)?8:m.players[0]);$('players').disabled=m.players.length===1}
 async function refresh(){
  try{
-  const x=await api('/api/servers');$('servers').replaceChildren();
+  const x=await api('/api/servers');if(x.credits){const c=x.credits;document.getElementById('credit-summary').textContent=c.creditExempt?'Admin account · servers are free':`${Number(c.creditTokenBalance).toFixed(6)} Credit Tokens · maximum debt ${c.creditPolicy.negativeLimit} tokens`;}$('servers').replaceChildren();
   const active=x.servers.filter(server=>server.status!=='stopped');
   if(!active.length)$('servers').textContent='No servers running. Start a match above.';
   for(const server of LISPServerList.sorted(active))$('servers').append(LISPServerList.card(server));

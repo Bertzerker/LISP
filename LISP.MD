@@ -138,4 +138,4 @@ See docs/SURVIVAL.md, docs/MY-SERVERS.md and outputs/Survival-status.md.
 Stopped entries also have owner/admin Delete entry and recoverable Restore on
 My Servers; deletion keeps saved worlds and never deletes Steam/game files.
 
-2026-10-09: removed the redundant portal Home page. Name, role, IP and MAC are in the shared top bar; Log out and Change password are in the forum. Downloads is the authenticated default page; `/login/` preserves login/registration and mandatory temporary-password changes.
+2026-10-09: removed the redundant portal Home page. Name, role, IP and MAC are in the shared top bar; Log out and Change password are at the bottom of the forum. Forum is the authenticated default page; `/login/` preserves login/registration and mandatory temporary-password changes.

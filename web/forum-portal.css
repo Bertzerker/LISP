@@ -27,3 +27,16 @@ body{min-width:0!important}
 .portal-layout .chat :is(input,select){background:#111826!important;color:#fff!important;border-color:var(--line)}
 .portal-layout .chat button{background:var(--cyan);color:#10232a}
 .workspace .page-content :is(.navigate_section ul,.dropmenu li a.active,.dropmenu li a:hover,.dropmenu li:hover,.top_menu){background:#243a44!important;background-image:none!important;color:#fff!important;border-color:var(--line);box-shadow:none}
+
+/* Compact forum header; the portal already supplies the site identity. */
+.workspace .page-content #header,.workspace .page-content #footer .copyright{display:none!important}
+.workspace .page-content #top_section .inner_wrap{display:flex;flex-wrap:wrap;align-items:center;gap:24px}
+.workspace .page-content #top_info{float:none;display:flex;align-items:center;gap:18px;flex:0 0 auto;max-width:100%;white-space:nowrap;margin:0}
+.workspace .page-content #search_form{float:none;display:flex;align-items:center;gap:8px;flex:1 1 400px;max-width:100%;margin:0;padding:0}
+.workspace .page-content #search_form input[type=search]{flex:1 1 160px;width:auto;min-width:0;margin:0}
+.workspace .page-content #search_form select{flex:0 1 180px;width:auto;min-width:130px;margin:0}
+.workspace .page-content #search_form input[type=submit]{flex:0 0 auto;width:auto;margin:0}
+@media(max-width:500px){.workspace .page-content #search_form{flex-wrap:wrap}.workspace .page-content #search_form input[type=search]{flex-basis:100%}.workspace .page-content #search_form select{flex:1}}
+
+.workspace .page-content #top_info>li{flex:0 0 auto;margin:0}
+@media(max-width:500px){.workspace .page-content #top_info{flex-wrap:wrap;gap:12px}}

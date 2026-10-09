@@ -39,8 +39,8 @@ after a verified dedicated-asset repair. MW3 needs licensed legacy Steam files. 
 
 This directory is the source project. `LISP.MD`, `GAMES.MD`, and `quake live.MD` are the original planning notes. Current implementation: download index, engine adapters for Quake Live, SoF2 Gold, Half-Life, Counter-Strike 1.6, Cross Product, Left 4 Dead 2, Jabroni Brawl, Team Fortress 2, Half-Life 2: Deathmatch, Unreal Tournament, UT2004, ET: Legacy and original Star Wars Battlefront II (2005), isolated instances, map discovery, player/mode/map/port selection, join/admin credentials, and a start/stop command. The portal now includes local browser/IRC chat, HTTPS administration, connected-device discovery, per-device/global Internet controls and bridge/separate interface setup with automatic rollback. All pages share left navigation, a central workspace and right chat panel with local pixel fonts and project icons.
 
-Home has been removed. Logged-in players open Downloads; guests use `/login/`.
-Log out and Change password are at the top of the forum. IRC connection codes
+Home has been removed. Logged-in players open Forum; guests use `/login/`.
+Log out and Change password are at the bottom of the forum. IRC connection codes
 are available in the chat sidebar.
 
 The personal top bar shows each player's name, role, IP, MAC, forum avatar and own running servers,

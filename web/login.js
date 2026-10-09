@@ -1,7 +1,7 @@
 (()=>{
  const $=id=>document.getElementById(id),say=text=>{$('account-message').textContent=text;$('account-message').className='error'};
  function view(user){
-  if(user&&!user.mustChange){location.replace('/downloads/');return}
+  if(user&&!user.mustChange){location.replace('/forum/');return}
   $('guest-account').hidden=!!user;$('change-account').hidden=!user;$('account-logout').hidden=!user;
   if(user){$('change-details').open=true;document.querySelector('#account-change input').focus()}
  }
@@ -10,5 +10,5 @@
   try{const user=await LISP.request('/auth-api/'+path,{name:form.elements.name.value,password:form.elements.password.value});form.reset();LISP.user=user;LISP.ready=Promise.resolve(user);location.reload()}
   catch(e){say(e.message)}finally{button.disabled=false}
  };
- LISP.bindAccountControls(()=>location.replace('/downloads/'));LISP.ready.then(view);
+ LISP.bindAccountControls(()=>location.replace('/forum/'));LISP.ready.then(view);
 })();

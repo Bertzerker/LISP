@@ -62,7 +62,7 @@
 .personal-network{color:var(--muted);font-size:11px;overflow-wrap:anywhere}
 #personal-bar{flex-wrap:wrap;gap:8px 22px}
 .personal-links{flex:1 1 auto}
-.forum-account-controls{border-bottom:2px solid var(--line);padding:0 0 16px;margin-bottom:20px}
+.forum-account-controls{border-top:2px solid var(--line);padding:16px 0 0;margin-top:20px}
 .forum-account-controls .button-row{align-items:center;gap:24px}
 .forum-account-controls details{margin-top:12px}
 .forum-account-controls .admin-form{margin-top:12px}

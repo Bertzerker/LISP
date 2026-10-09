@@ -17,7 +17,7 @@ function fixture(){
  for(const user of [null,{name:'Player',mustChange:true},{name:'Player',mustChange:false}]){
   let destination='';const nodes=Object.fromEntries(['account-message','guest-account','change-account','account-logout','change-details','account-login','account-register'].map(id=>[id,{}]));
   const LISP={ready:Promise.resolve(user),bindAccountControls:()=>{}};load('login.js',{LISP,document:{getElementById:id=>nodes[id],querySelector:()=>({focus(){}})},location:{replace:x=>{destination=x}}});await new Promise(resolve=>setImmediate(resolve));
-  if(user&&!user.mustChange)assert.equal(destination,'/downloads/');else{assert.equal(destination,'');assert.equal(nodes['guest-account'].hidden,!!user);assert.equal(nodes['change-account'].hidden,!user);if(user)assert.equal(nodes['change-details'].open,true)}
+  if(user&&!user.mustChange)assert.equal(destination,'/forum/');else{assert.equal(destination,'');assert.equal(nodes['guest-account'].hidden,!!user);assert.equal(nodes['change-account'].hidden,!user);if(user)assert.equal(nodes['change-details'].open,true)}
  }
  console.log('PASS password mismatch, success/session rotation, rejected change, logout and guest/temporary-password/normal-login routing');
 })().catch(e=>{console.error(e);process.exitCode=1});

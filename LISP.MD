@@ -139,3 +139,25 @@ Stopped entries also have owner/admin Delete entry and recoverable Restore on
 My Servers; deletion keeps saved worlds and never deletes Steam/game files.
 
 2026-10-09: removed the redundant portal Home page. Name, role, IP and MAC are in the shared top bar; Log out and Change password are at the bottom of the forum. Forum is the authenticated default page; `/login/` preserves login/registration and mandatory temporary-password changes.
+
+## Stopped-server port changes — 2026-10-09
+
+My Servers offers creator/admin-only Server port and Save port controls for
+stopped entries, with automatic free-port selection and disabled busy choices.
+Game/query/admin sockets and starting instances are checked under the controller
+lock at saving and restart. Worlds, private credentials, settings and ownership
+are retained; Join and related admin ports update. Saving does not start or
+reserve a port. Active servers cannot have their port changed.
+
+Ten isolated Linux lifecycle tests and the JavaScript UI fixtures passed.
+Live HTTPS and browser tests reproduced a second Quake Live server taking a
+stopped server's port. The stopped entry rejected the occupied port, saved
+27019, and restarted alongside the other instance on 27015. Ownership, map,
+mode, eight-player limit and password flags remained; RCON moved to 28019.
+Stopping the changed instance left the other running. Only owned test entries
+were stopped/deleted; existing stopped entries remained. Persistent-world bytes
+and cold-loaded presets were verified in isolated tests, not by rerunning the
+heavy survival engines. No firewall or account changes were made.
+
+See docs/MY-SERVERS.md, outputs/Server-port-live.json and
+outputs/Server-port-change.png.

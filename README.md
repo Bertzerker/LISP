@@ -4,7 +4,8 @@ A local portal for game downloads, on-demand dedicated servers, player accounts,
 
 Project Zomboid and 7 Days to Die are available with owned persistent worlds.
 My Servers now has **Stop** and **Restart**: worlds and settings remain, including
-after a reboot. The portal allows **six active servers** and **36 port choices
+after a reboot. Stopped servers have a **Server port** selector and **Save port**
+button, including automatic free-port selection when the old port is busy. The portal allows **six active servers** and **36 port choices
 (27015–27050)**, with 32 additional LAN-only ports. See [survival setup](docs/SURVIVAL.md)
 and [My Servers](docs/MY-SERVERS.md).
 
@@ -73,7 +74,8 @@ The Quake Live installer downloads official game binaries separately. They are n
 - `/`: main portal.
 - `/downloads/`: games and patches.
 - Upload files to `/srv/lan-party/files`; the download tree refreshes about once a minute. Reload an already-open download page to see new links. The refresh timer starts automatically after reboot.
-- `/servers/`: launch and stop matches; four concurrent slots, including multiple instances of the same game.
+- `/servers/`: launch and join matches; six concurrent slots, including multiple instances of the same game.
+- `/my-servers/`: stop, restart, change a stopped server's port, or delete/restore its entry.
 - `lan-server start --map campgrounds --mode ffa --players 8`
 - `lan-server list`
 - `lan-server stop INSTANCE_ID`

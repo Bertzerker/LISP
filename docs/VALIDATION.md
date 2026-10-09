@@ -362,5 +362,27 @@ saved worlds, private/deleted presets, compiled binaries, ISOs and credentials.
 
 - 2026-10-09 forum refinement: navigation is Forum (home), Game Servers, My Servers, Tournaments, Trophy Room, Downloads, then admin-only Accounts and Network. `/` and normal login now land on Forum. Forum title/logo and visible SMF footer branding are hidden; original runtime/license files are preserved. The quick-search input, scope dropdown and submit button share a row; profile/messages/alerts retain their intrinsic widths with explicit gaps, and the complete search row wraps below them when space is limited. Account controls are below the native forum footer, including hash navigation to the password form. Live browser checks confirmed the exact menu order, root-to-Forum navigation, hidden headline/branding, aligned search fields, all three account links at the same vertical position, bottom controls and actual search returning the existing Essen Bestellen topic. Account-route, guest/API denial, CSRF and logout checks passed. Shared account form tests still pass with the new landing route. Screenshot: `outputs/Portal-forum-layout.png`. Website/forum worker were reloaded gracefully; no game matches were stopped or restarted.
 
+## Stopped-server port changes — 2026-10-09
+
+My Servers offers creator/admin-only Server port and Save port controls for
+stopped entries, with automatic free-port selection and disabled busy choices.
+Game/query/admin sockets and starting instances are checked under the controller
+lock at saving and restart. Worlds, private credentials, settings and ownership
+are retained; Join and related admin ports update. Saving does not start or
+reserve a port. Active servers cannot have their port changed.
+
+Ten isolated Linux lifecycle tests and the JavaScript UI fixtures passed.
+Live HTTPS and browser tests reproduced a second Quake Live server taking a
+stopped server's port. The stopped entry rejected the occupied port, saved
+27019, and restarted alongside the other instance on 27015. Ownership, map,
+mode, eight-player limit and password flags remained; RCON moved to 28019.
+Stopping the changed instance left the other running. Only owned test entries
+were stopped/deleted; existing stopped entries remained. Persistent-world bytes
+and cold-loaded presets were verified in isolated tests, not by rerunning the
+heavy survival engines. No firewall or account changes were made.
+
+See docs/MY-SERVERS.md, outputs/Server-port-live.json and
+outputs/Server-port-change.png.
+
 - HTTP check before the ET: Legacy addition: 47 downloads passed HEAD/size and resumable-range checks. The 40 original entries are present under their original names except `AOE.iso`, now `Age of Empires Collection.iso`; its SHA-256 still matches the original transfer manifest. The source drive was unavailable for a new complete local checksum comparison.
 - Final service check: controller, nginx website, index timer and SFTP/SSH were active. No test matches remained running.

@@ -1,0 +1,24 @@
+{
+  "first": "9a263540fc38",
+  "second": "dfb71edd8ad2",
+  "oldPort": 27015,
+  "targetPort": 27019,
+  "baselineIds": [
+    "ca788b902508",
+    "33cb900affc5"
+  ],
+  "ownerId": 1,
+  "gameId": "quakelive",
+  "mode": "ffa",
+  "map": "campgrounds",
+  "players": 8,
+  "busyPortRejected": true,
+  "activePortEditRejected": true,
+  "ownedTestsStopped": true,
+  "twoPortsRunningVerified": true,
+  "ownerAndSettingsPreserved": true,
+  "adminPortUpdated": true,
+  "independentStopVerified": true,
+  "ownedTestEntriesDeleted": true,
+  "browserPortSaveAndRestartVerified": true
+}

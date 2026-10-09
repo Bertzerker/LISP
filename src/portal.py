@@ -34,19 +34,54 @@ def password(value):
         raise ValueError('Passwords may use up to 64 letters, numbers, spaces and !@#$%^&*()_+=.,:?- (no quotes, slashes or semicolons).')
     return value
 
+def valid_port(adapter,port):
+    if type(port) is not int or port not in PORTS:return False
+    if adapter.engine=='sevendays' and port+2 not in PORTS:return False
+    if (adapter.engine in ('unreal','zomboid','brink') or adapter.id=='t5') and port+1 not in PORTS:return False
+    return True
+
+def free_port(adapter,port):
+    # Caller holds lock: include ports of starting engines before they bind sockets.
+    if not valid_port(adapter,port):return False
+    reserved=adapter.reserved_ports(port)
+    used={(number,typ) for item in instances.values() if item['process'].poll() is None for number,typ in item['adapter'].reserved_ports(item['port'])}
+    if any(pair in used for pair in reserved):return False
+    probes=[]
+    try:
+        for number,typ in reserved:
+            probe=socket.socket(socket.AF_INET,typ);probes.append(probe);probe.bind(('0.0.0.0',number))
+        return True
+    except OSError:return False
+    finally:
+        for probe in probes:probe.close()
+
+def choose_port(adapter,requested):
+    if requested is not None and not valid_port(adapter,requested):raise ValueError('Choose a valid port for this game.')
+    for candidate in ([requested] if requested is not None else PORTS):
+        if free_port(adapter,candidate):return candidate
+    raise ValueError('That port is busy. Choose automatic or another port.')
+
 def listing(actor=None):
     result=[]
     with lock:
+        installed=registry() if any(ident not in instances and permitted(record['public'],actor) for ident,record in records.items()) else {}
         for ident,item in instances.items():
             code=item['process'].poll();info=item['adapter'].query(item['port']) if code is None else None
             # One dropped UDP reply must not turn an established match back into startup.
             now=time.monotonic()
             if info is not None:item['lastInfo']=info;item['lastReady']=now
             elif code is None and now-item.get('lastReady',0)<20:info=item.get('lastInfo')
-            result.append({**item['public'],'canStop':permitted(item['public'],actor),'canRestart':permitted(item['public'],actor),'canDelete':False,'status':'running' if info is not None else ('starting' if code is None else 'failed'),'connected':info.get('clients') if info else None,'currentMap':info.get('mapname',item['public']['map']) if info else item['public']['map'],'exitCode':code})
+            result.append({**item['public'],'canStop':permitted(item['public'],actor),'canRestart':permitted(item['public'],actor),'canDelete':False,'canChangePort':False,'status':'running' if info is not None else ('starting' if code is None else 'failed'),'connected':info.get('clients') if info else None,'currentMap':info.get('mapname',item['public']['map']) if info else item['public']['map'],'exitCode':code})
         for ident,record in records.items():
             if ident not in instances:
-                result.append({**record['public'],'canStop':False,'canRestart':permitted(record['public'],actor),'canDelete':permitted(record['public'],actor),'status':'stopped','connected':0,'currentMap':record['public']['map'],'exitCode':None})
+                row={**record['public'],'canStop':False,'canRestart':permitted(record['public'],actor),'canDelete':permitted(record['public'],actor),'canChangePort':False,'status':'stopped','connected':0,'currentMap':record['public']['map'],'exitCode':None}
+                if permitted(record['public'],actor):
+                    adapter=installed.get(record['public']['gameId'])
+                    if adapter:
+                        row['canChangePort']=True
+                        row['portOptions']=[{'port':port,'available':free_port(adapter,port)} for port in PORTS if valid_port(adapter,port)]
+                        row['portBusy']=not any(option['port']==row['port'] and option['available'] for option in row['portOptions'])
+                result.append(row)
     return result
 
 def start(data,actor,existing=None):
@@ -73,23 +108,7 @@ def start(data,actor,existing=None):
         if adapter.engine in ('zomboid','sevendays'):
             world=data.get('world','new')
             if world!='new' and any(i['public'].get('worldId')==world for i in active):raise ValueError('That world is already running. Choose another world.')
-        requested=data.get('port')
-        if requested is not None and (type(requested) is not int or requested not in PORTS):raise ValueError('Choose a valid port.')
-        used={number for i in active for number,typ in i['adapter'].reserved_ports(i['port']) if typ==socket.SOCK_DGRAM};port=None
-        for candidate in ([requested] if requested is not None else PORTS):
-            reserved=adapter.reserved_ports(candidate)
-            if adapter.engine=='sevendays' and candidate+2 not in PORTS:continue
-            if (adapter.engine in ('unreal','zomboid','brink') or adapter.id=='t5') and candidate+1 not in PORTS:continue
-            if any(n in used for n,t in reserved if t==socket.SOCK_DGRAM):continue
-            probes=[]
-            try:
-                for number,typ in reserved:
-                    probe=socket.socket(socket.AF_INET,typ);probes.append(probe);probe.bind(('0.0.0.0',number))
-                port=candidate;break
-            except OSError:pass
-            finally:
-                for probe in probes:probe.close()
-        if port is None:raise ValueError('That port is busy. Choose automatic or another port.')
+        port=choose_port(adapter,data.get('port'))
         ident=existing['public']['id'] if existing else uuid.uuid4().hex[:12];home=ROOT/'instances'/ident
         if existing and home.exists():
             if home.is_symlink() or home.resolve().parent!=(ROOT/'instances').resolve():raise ValueError('Invalid instance folder.')
@@ -176,6 +195,25 @@ def restart(ident,actor):
         if ident in instances:stop(ident,actor)
         return start(dict(record['launch']),actor,existing=record)
 
+def change_port(ident,requested,actor):
+    with lock:
+        if ident not in records:raise ValueError('Server not found.')
+        record=records[ident]
+        if not permitted(record['public'],actor):raise PermissionError('Only the creator or an administrator can change this server port.')
+        if ident in instances:raise ValueError('Stop the server before changing its port.')
+        adapter=registry().get(record['public']['gameId'])
+        if adapter is None:raise ValueError('This game is no longer installed.')
+        port=choose_port(adapter,requested)
+        updated=json.loads(json.dumps(record));public=updated['public'];old=public['port']
+        public['port']=port;updated['launch']['port']=port
+        for key in ('adminPort','directPort'):
+            previous=public.get(key)
+            if previous is not None:public[key]=port+(previous-old)
+        if record['public'].get('adminPort') is not None and isinstance(public.get('adminInstructions'),str):
+            public['adminInstructions']=re.sub(r'(?<!\d)'+str(record['public']['adminPort'])+r'(?!\d)',str(public['adminPort']),public['adminInstructions'])
+        save_record(ident,updated)
+        return {'id':ident,'port':port}
+
 def delete_entry(ident,actor):
     with lock:
         if ident not in records:raise ValueError('Server not found.')
@@ -197,7 +235,7 @@ def restore_entry(ident,actor):
 
 def deleted_listing(actor):
     with lock:
-        return [{**record['public'],'status':'deleted','canStop':False,'canRestart':False,'canDelete':False,'canRestore':True,'connected':0,'currentMap':record['public']['map']} for record in deleted_records.values() if permitted(record['public'],actor)]
+        return [{**record['public'],'status':'deleted','canStop':False,'canRestart':False,'canDelete':False,'canRestore':True,'canChangePort':False,'connected':0,'currentMap':record['public']['map']} for record in deleted_records.values() if permitted(record['public'],actor)]
 
 def catalog_for(adapter,actor):
     result=adapter.catalog()
@@ -231,6 +269,9 @@ class Handler(BaseHTTPRequestHandler):
             if not isinstance(data,dict):raise ValueError('Invalid request.')
             if self.path=='/api/servers':result=start(data,actor)
             elif re.fullmatch(r'/api/servers/[a-f0-9]{12}/stop',self.path):stop(self.path.split('/')[3],actor);result={'stopped':True}
+            elif re.fullmatch(r'/api/servers/[a-f0-9]{12}/port',self.path):
+                if 'port' not in data:raise ValueError('Choose a port or automatic.')
+                result=change_port(self.path.split('/')[3],data['port'],actor)
             elif re.fullmatch(r'/api/servers/[a-f0-9]{12}/restart',self.path):result=restart(self.path.split('/')[3],actor)
             elif re.fullmatch(r'/api/servers/[a-f0-9]{12}/delete',self.path):delete_entry(self.path.split('/')[3],actor);result={'deleted':True,'worldKept':True}
             elif re.fullmatch(r'/api/servers/[a-f0-9]{12}/restore',self.path):restore_entry(self.path.split('/')[3],actor);result={'restored':True}

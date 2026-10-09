@@ -1,6 +1,6 @@
 # My Servers
 
-Open **04 / MY SERVERS** or the server activity link in your top bar.
+Open **03 / MY SERVERS** or the server activity link in your top bar.
 Your own starting, running, failed and stopped servers remain listed separately.
 **Stop** saves a persistent world and releases its ports. **Restart** reuses the
 same server entry, owner, game, map, mode, player limit, passwords and world.
@@ -15,6 +15,18 @@ management buttons are on My Servers. Stopped entries have **Delete entry** on M
 keeps its world. **Deleted server entries → Restore entry** brings back its
 settings without starting it. Only its creator or an admin can delete/restore.
 Game Servers has no management or delete controls.
+
+While a server is stopped, its creator or an administrator can select a new
+**Server port**, then click **Save port**. **Automatic — choose a free port**
+selects one for you. Saving does not start the server; use **Restart server**
+when ready. The same entry, owner, saved world, map, mode, player limit and
+passwords are retained. Join instructions and related admin ports update.
+
+Stopped servers release their ports. If another server takes one, the entry
+shows **This port is in use**, and Restart stays disabled until you save a free
+port. Busy choices are disabled. Game, query and admin sockets, plus instances
+still starting, are checked when saving and again at restart. A saved port is
+not reserved while stopped, so another player may take it later.
 
 There are **36 port choices (27015–27050)**: the original four plus 32 new choices.
 Automatic selection skips busy game/query/admin ports. Six servers may run at
@@ -33,5 +45,6 @@ folder before preserving its stale logs under `retired-instances`. Installed
 games and worlds are not deleted. Nothing starts automatically after reboot.
 
 The page refreshes every 10 seconds while visible; the top bar every 30 seconds.
-Tests cover ownership, secrets, durable records, limits and Stop/Restart controls.
+Tests cover ownership, secrets, durable records, limits, Stop/Restart controls
+and stopped-server port changes, including related socket collisions.
 See [Survival servers](SURVIVAL.md) for game versions and native admin differences.

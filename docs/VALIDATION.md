@@ -396,5 +396,18 @@ and automatic credit-floor stop passed. Existing accounts and baseline entries
 remain; no firewall permissions changed. No real payment service is connected.
 See docs/CREDITS-AND-LOAD.md and outputs/Credit-load-live.json.
 
+## Mumble boot startup repair — 2026-10-09
+
+Boot logs identified a LAN-address race: the native meta process stayed active
+after the voice listener failed. Startup now orders after network-online and
+waits for the exact configured local address with bounded retries. Four Linux
+startup tests, native systemd sandbox preflight, unit/installer syntax, enabled
+services and actual TCP/UDP 64738 listeners passed. A Windows LAN client passed
+UDP ping, pinned TLS guest login, General channel switching and live viewer
+membership; it disconnected afterward. Authenticated/guest viewer access and
+the real browser's General/Shooter/Strategy tree passed. Only Mumble and its
+viewer restarted. PC reboot/audio playback were not tested. Evidence:
+outputs/Mumble-boot-live.json and outputs/Mumble-boot-restored.png.
+
 - HTTP check before the ET: Legacy addition: 47 downloads passed HEAD/size and resumable-range checks. The 40 original entries are present under their original names except `AOE.iso`, now `Age of Empires Collection.iso`; its SHA-256 still matches the original transfer manifest. The source drive was unavailable for a new complete local checksum comparison.
 - Final service check: controller, nginx website, index timer and SFTP/SSH were active. No test matches remained running.

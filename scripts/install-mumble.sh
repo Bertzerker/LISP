@@ -44,9 +44,13 @@ npm install --omit=dev --ignore-scripts --no-audit --no-fund
 slice2js -I/usr/share/ice/slice --output-dir /opt/lisp-mumble /usr/share/mumble-server/MumbleServer.ice
 cd - >/dev/null
 install -m 644 src/mumble_view.js scripts/setup-mumble.js /opt/lisp-mumble/
+install -m 644 scripts/wait-mumble-address.py /opt/lisp-mumble/
+install -d -m 755 /etc/systemd/system/mumble-server.service.d
+install -m 644 config/mumble-server-network.conf /etc/systemd/system/mumble-server.service.d/lisp-network.conf
 install -m 644 config/lisp-mumble-view.service /etc/systemd/system/
 install -m 644 config/mumble-locations.conf /etc/nginx/lisp-community/portal/mumble.conf
 systemctl daemon-reload
+systemctl enable NetworkManager-wait-online.service
 systemctl enable --now mumble-server
 node /opt/lisp-mumble/setup-mumble.js
 systemctl enable --now lisp-mumble-view

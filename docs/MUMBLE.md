@@ -27,6 +27,14 @@ The native service starts at boot. TCP and UDP 64738 are allowed only from
 loopback-only on 6502; the channel viewer's bridge is loopback-only on 8810.
 nginx authenticates `/mumble-api/` before forwarding requests.
 
+The packaged `mumble-server-network.conf` systemd drop-in orders startup after
+`network-online.target`, with NetworkManager's online wait enabled. Before the
+native daemon starts, `wait-mumble-address.py` checks that the configured LAN
+address can be bound. This also handles Wi-Fi becoming ready before Ethernet.
+It waits up to 90 seconds; failed startup retries after 10 seconds until the
+address is available. The probe uses an ephemeral UDP socket, preserving the
+native service's netlink restriction and leaving the voice port free.
+
 A random SuperUser password is stored only at
 `/etc/lisp/mumble/superuser-password`, readable by root. To administer the native
 server, privately read that file on the host, then connect as **SuperUser** in
@@ -60,3 +68,20 @@ not exercised by the automated clients.
 Sources: [Arch package](https://archlinux.org/packages/extra/x86_64/mumble-server/),
 [Mumble administration](https://www.mumble.info/documentation/administration/config-file/),
 [Mumble protocol](https://github.com/mumble-voip/mumble/blob/master/src/Mumble.proto).
+
+## Reboot startup repair — 2026-10-09
+
+The boot journal showed `TCP Listen on 192.168.8.138:64738 failed: The address
+is not available`. Mumble's meta process remained active while its voice server
+stopped, so the existing process-restart policy did not recover it. The vendor
+unit wanted network-online but did not order startup after it.
+
+Installed the startup ordering/address preflight above and restarted only the
+native Mumble daemon and viewer. Four isolated startup tests, actual systemd
+preflight under the native service restrictions, unit and installer syntax,
+enabled boot services, TCP/UDP voice listeners, Windows LAN ping, pinned TLS
+guest connection, channel switch, live viewer membership and authenticated
+portal viewer checks passed. The test client disconnected. No game service,
+firewall, account or native credential changes were needed. A full PC reboot
+and microphone/audio playback were not performed. Evidence:
+`outputs/Mumble-boot-live.json` and `outputs/Mumble-boot-restored.png`.

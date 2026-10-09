@@ -1,0 +1,25 @@
+{
+  "udpLanPing": true,
+  "nativeTlsCertificatePinned": true,
+  "nativeGuestLogin": true,
+  "channelSwitch": true,
+  "liveViewerUserPresence": true,
+  "channels": [
+    "General",
+    "Shooter",
+    "Strategy"
+  ],
+  "voiceAudio": "not tested",
+  "testClientDisconnected": true,
+  "bootFailure": "LAN address unavailable when native voice listener started; meta process stayed active",
+  "startupFix": "network-online ordering plus exact local-address bind preflight, 90-second wait and 10-second retries",
+  "linuxStartupTests": 4,
+  "unitAndInstallerSyntaxPassed": true,
+  "nativeSandboxPreflightPassed": true,
+  "bootServicesEnabled": true,
+  "lanTcpUdpListener": "192.168.8.138:64738",
+  "authenticatedViewerAndGuestDenialPassed": true,
+  "browserChannelTreePassed": true,
+  "pcRebootPerformed": false,
+  "gameControllerRestarted": false
+}

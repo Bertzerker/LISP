@@ -17,6 +17,7 @@ Local Mumble voice runs at **192.168.8.138:64738**, with General, Shooter and
 Strategy channels. Click the highlighted **CHAT // MUMBLE** sidebar tabs to
 switch views; **Join voice** opens the desktop app. The live channel box grows
 with its occupants. Text chat messages expire after **two hours** in all rooms.
+Mumble startup waits for its LAN address and retries if the network is delayed.
 See [Mumble setup](docs/MUMBLE.md) and [chat](docs/CHAT.md).
 
 

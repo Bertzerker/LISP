@@ -102,6 +102,11 @@ rooms, including idle cleanup and already-open pages. Contagion and Brink
 are published with two-instance/password/ownership tests and alphabetical list.
 See docs/MUMBLE.md, docs/CHAT.md and docs/STEAM-EXTRAS.md.
 
+Mumble reboot startup repaired: order after network-online, wait for the exact
+LAN address and retry when delayed. Native LAN login/channel/viewer and four
+startup tests passed. No complete PC reboot was performed; see
+outputs/Mumble-boot-live.json and outputs/Mumble-boot-restored.png.
+
 ## Trophy Room — 2026-10-09
 
 Replaced 06 / My Profile with Trophy Room. All enabled players have forum avatars

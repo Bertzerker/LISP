@@ -2,12 +2,32 @@
 import json,os,re,shutil,signal,socket,subprocess,threading,time,uuid,pty,fcntl,termios,struct
 from http.server import BaseHTTPRequestHandler,ThreadingHTTPServer
 from urllib.parse import urlparse
-from adapters import ROOT,registry
+from adapters import ROOT,registry,private_file
 from account_client import check
-PORTS=range(27015,27019)
-MAX_SERVERS=4
+PORTS=range(27015,27051)
+MAX_SERVERS=6
 ALLOWED_HOSTS=set(os.environ.get('LISP_ALLOWED_HOSTS','192.168.8.138,127.0.0.1,localhost').split(','))
-lock=threading.RLock();instances={}
+lock=threading.RLock();instances={};records={}
+RECORDS=ROOT/'records'
+for record_path in RECORDS.glob('*.json'):
+    try:
+        value=json.loads(record_path.read_text())
+        if re.fullmatch(r'[a-f0-9]{12}',record_path.stem) and value['public']['id']==record_path.stem:records[record_path.stem]=value
+    except (OSError,ValueError,KeyError):pass
+
+DELETED=ROOT/'deleted-records';deleted_records={}
+for record_path in DELETED.glob('*.json'):
+    try:
+        value=json.loads(record_path.read_text())
+        if re.fullmatch(r'[a-f0-9]{12}',record_path.stem) and value['public']['id']==record_path.stem:deleted_records[record_path.stem]=value
+    except (OSError,ValueError,KeyError):pass
+
+def save_record(ident,value):
+    RECORDS.mkdir(parents=True,exist_ok=True,mode=0o700);RECORDS.chmod(0o700)
+    temporary=RECORDS/(ident+'.tmp');private_file(temporary,json.dumps(value,separators=(',',':'))+'\n');temporary.replace(RECORDS/(ident+'.json'));records[ident]=value
+
+def permitted(public,actor):return bool(actor and (actor['role']=='admin' or actor['id']==public.get('ownerId')))
+
 
 def password(value):
     if not isinstance(value,str) or not re.fullmatch(r'[A-Za-z0-9 !@#$%^&*()_+=.,:?-]{0,64}',value):
@@ -23,10 +43,13 @@ def listing(actor=None):
             now=time.monotonic()
             if info is not None:item['lastInfo']=info;item['lastReady']=now
             elif code is None and now-item.get('lastReady',0)<20:info=item.get('lastInfo')
-            result.append({**item['public'],'canStop':bool(actor and (actor['role']=='admin' or actor['id']==item['public'].get('ownerId'))),'status':'running' if info is not None else ('starting' if code is None else 'failed'),'connected':info.get('clients') if info else None,'currentMap':info.get('mapname',item['public']['map']) if info else item['public']['map'],'exitCode':code})
+            result.append({**item['public'],'canStop':permitted(item['public'],actor),'canRestart':permitted(item['public'],actor),'canDelete':False,'status':'running' if info is not None else ('starting' if code is None else 'failed'),'connected':info.get('clients') if info else None,'currentMap':info.get('mapname',item['public']['map']) if info else item['public']['map'],'exitCode':code})
+        for ident,record in records.items():
+            if ident not in instances:
+                result.append({**record['public'],'canStop':False,'canRestart':permitted(record['public'],actor),'canDelete':permitted(record['public'],actor),'status':'stopped','connected':0,'currentMap':record['public']['map'],'exitCode':None})
     return result
 
-def start(data,actor):
+def start(data,actor,existing=None):
     adapters=registry();game=data.get('game')
     if not isinstance(game,str) or game not in adapters:raise ValueError('Choose an installed game.')
     adapter=adapters[game];mode=data.get('mode');level=data.get('map');players=data.get('players')
@@ -43,12 +66,11 @@ def start(data,actor):
     if not isinstance(rawids,str):raise ValueError('Admin Steam IDs must be text.')
     ids=[x for x in re.split(r'[,\s]+',rawids.strip()) if x]
     if len(ids)>16 or any(not re.fullmatch(r'7656119\d{10}',x) for x in ids):raise ValueError('Enter valid 17-digit SteamID64 values separated by commas.')
-    if ids and adapter.engine!='quake':raise ValueError('Steam ID admin entries are supported for Quake Live only.')
+    if ids and adapter.engine not in ('quake','sevendays'):raise ValueError('Steam ID admin entries are supported for Quake Live and 7 Days to Die only.')
     with lock:
         active=[i for i in instances.values() if i['process'].poll() is None]
-        if len(active)>=MAX_SERVERS:raise ValueError('Four servers are already running. Stop one first.')
-        if adapter.id=='zomboid':
-            if sum(i['adapter'].id=='zomboid' for i in active)>=2:raise ValueError('Two Zomboid worlds are already running. Stop one first.')
+        if len(active)>=MAX_SERVERS:raise ValueError('Six servers are already running. Stop one first.')
+        if adapter.engine in ('zomboid','sevendays'):
             world=data.get('world','new')
             if world!='new' and any(i['public'].get('worldId')==world for i in active):raise ValueError('That world is already running. Choose another world.')
         requested=data.get('port')
@@ -56,6 +78,7 @@ def start(data,actor):
         used={number for i in active for number,typ in i['adapter'].reserved_ports(i['port']) if typ==socket.SOCK_DGRAM};port=None
         for candidate in ([requested] if requested is not None else PORTS):
             reserved=adapter.reserved_ports(candidate)
+            if adapter.engine=='sevendays' and candidate+2 not in PORTS:continue
             if (adapter.engine in ('unreal','zomboid','brink') or adapter.id=='t5') and candidate+1 not in PORTS:continue
             if any(n in used for n,t in reserved if t==socket.SOCK_DGRAM):continue
             probes=[]
@@ -67,9 +90,21 @@ def start(data,actor):
             finally:
                 for probe in probes:probe.close()
         if port is None:raise ValueError('That port is busy. Choose automatic or another port.')
-        ident=uuid.uuid4().hex[:12];home=ROOT/'instances'/ident;home.mkdir(mode=0o700,parents=True)
+        ident=existing['public']['id'] if existing else uuid.uuid4().hex[:12];home=ROOT/'instances'/ident
+        if existing and home.exists():
+            if home.is_symlink() or home.resolve().parent!=(ROOT/'instances').resolve():raise ValueError('Invalid instance folder.')
+            # Inspect only the explicitly requested stopped entry. Never move a
+            # folder referenced by a live engine; retain stale private logs.
+            for cmdline in __import__('pathlib').Path('/proc').glob('[0-9]*/cmdline'):
+                try:
+                    if str(home).encode() in cmdline.read_bytes():raise ValueError('This instance still has a running process. Retry after it stops.')
+                except (OSError,PermissionError):pass
+            archive=ROOT/'retired-instances';archive.mkdir(mode=0o700,exist_ok=True)
+            home.rename(archive/(ident+'-'+uuid.uuid4().hex[:8]))
+        home.mkdir(mode=0o700,parents=True)
         try:
             if hasattr(adapter,'prepare_request'):
+                data={**data,'_actor':{'id':actor['id'],'role':actor['role']}}
                 if adapter.engine=='cod':data={**data,'_queryClients':[actor['ip']]}
                 args,cwd=adapter.prepare_request(home,port,mode,level,players,join,admin,ids,mutators,data)
             else:args,cwd=adapter.prepare(home,port,mode,level,players,join,admin,ids,mutators)
@@ -103,13 +138,21 @@ def start(data,actor):
             shutil.rmtree(home);raise
         public={'id':ident,'game':adapter.name,'gameId':game,'mode':mode,'modeName':adapter.modes()[mode],'players':players,'map':level,'port':port,'started':int(time.time()),'passwordProtected':bool(join),'adminEnabled':bool(admin or ids),'mutators':mutators,'adminKind':'steamid-zmq' if adapter.engine=='quake' else 'unreal' if adapter.engine=='unreal' else 'swbf2' if adapter.engine=='swbf2' else 'etlegacy' if adapter.id=='etlegacy' else 'zomboid' if adapter.id=='zomboid' else 'rcon','inGameAdminEnabled':bool(ids) if adapter.engine=='quake' else bool(admin),'adminPort':(port+1000 if adapter.engine=='quake' else port) if admin else None}
         if hasattr(adapter,'public_details'):public.update(adapter.public_details())
-        public.update(ownerId=actor['id'],ownerName=actor['name'])
+        public.update(ownerId=existing['public']['ownerId'] if existing else actor['id'],ownerName=existing['public']['ownerName'] if existing else actor['name'])
+        preset={k:v for k,v in data.items() if not k.startswith('_')};preset['port']=port
+        if public.get('worldId'):preset['world']=public['worldId']
         instances[ident]={'public':public,'process':proc,'adapter':adapter,'port':port,'home':home,'log':log}
+        try:save_record(ident,{'public':public,'launch':preset})
+        except Exception:
+            stop(ident,actor);raise
         return {'id':ident,'port':port}
 
 def stop(ident,actor=None):
     with lock:
-        if ident not in instances:raise ValueError('Server not found.')
+        if ident not in instances:
+            if ident not in records:raise ValueError('Server not found.')
+            if actor is not None and not permitted(records[ident]['public'],actor):raise PermissionError('Only the creator or an administrator can stop this server.')
+            return
         item=instances[ident];proc=item['process']
         if actor is not None and actor['role']!='admin' and actor['id']!=item['public'].get('ownerId'):raise PermissionError('Only the creator or an administrator can stop this server.')
         if proc.poll() is None:
@@ -125,6 +168,43 @@ def stop(ident,actor=None):
         shutil.rmtree(home)
         del instances[ident]
 
+def restart(ident,actor):
+    with lock:
+        if ident not in records:raise ValueError('Server not found.')
+        record=records[ident]
+        if not permitted(record['public'],actor):raise PermissionError('Only the creator or an administrator can restart this server.')
+        if ident in instances:stop(ident,actor)
+        return start(dict(record['launch']),actor,existing=record)
+
+def delete_entry(ident,actor):
+    with lock:
+        if ident not in records:raise ValueError('Server not found.')
+        if not permitted(records[ident]['public'],actor):raise PermissionError('Only the creator or an administrator can delete this entry.')
+        if ident in instances:raise ValueError('Stop the server before deleting its entry.')
+        DELETED.mkdir(mode=0o700,exist_ok=True);DELETED.chmod(0o700)
+        (RECORDS/(ident+'.json')).replace(DELETED/(ident+'.json'))
+        deleted_records[ident]=records.pop(ident)
+
+def restore_entry(ident,actor):
+    with lock:
+        if ident not in deleted_records:raise ValueError('Deleted entry not found.')
+        record=deleted_records[ident]
+        if not permitted(record['public'],actor):raise PermissionError('Only the creator or an administrator can restore this entry.')
+        if ident in records or ident in instances:raise ValueError('That entry already exists.')
+        RECORDS.mkdir(mode=0o700,exist_ok=True)
+        (DELETED/(ident+'.json')).replace(RECORDS/(ident+'.json'))
+        records[ident]=deleted_records.pop(ident)
+
+def deleted_listing(actor):
+    with lock:
+        return [{**record['public'],'status':'deleted','canStop':False,'canRestart':False,'canDelete':False,'canRestore':True,'connected':0,'currentMap':record['public']['map']} for record in deleted_records.values() if permitted(record['public'],actor)]
+
+def catalog_for(adapter,actor):
+    result=adapter.catalog()
+    if result.get('persistentWorlds'):
+        result['worlds']=[{k:w[k] for k in ('id','name','mode','map')} for w in result['worlds'] if actor['role']=='admin' or w.get('ownerId')==actor['id']]
+    return result
+
 class Handler(BaseHTTPRequestHandler):
     def allowed_host(self):
         return urlparse('//'+self.headers.get('Host','')).hostname in ALLOWED_HOSTS
@@ -135,8 +215,8 @@ class Handler(BaseHTTPRequestHandler):
         if not self.allowed_host():self.reply(403,{'error':'Use the LAN server address.'});return
         try:
             actor=check(self.headers)
-            if self.path=='/api/catalog':self.reply(200,{'games':[a.catalog() for a in registry().values()],'maxServers':MAX_SERVERS,'ports':list(PORTS)})
-            elif self.path=='/api/servers':self.reply(200,{'servers':listing(actor)})
+            if self.path=='/api/catalog':self.reply(200,{'games':[catalog_for(a,actor) for a in registry().values()],'maxServers':MAX_SERVERS,'ports':list(PORTS)})
+            elif self.path=='/api/servers':self.reply(200,{'servers':listing(actor),'deletedServers':deleted_listing(actor)})
             else:self.reply(404,{'error':'Not found'})
         except PermissionError as e:self.reply(401,{'error':str(e)})
     def do_POST(self):
@@ -151,6 +231,9 @@ class Handler(BaseHTTPRequestHandler):
             if not isinstance(data,dict):raise ValueError('Invalid request.')
             if self.path=='/api/servers':result=start(data,actor)
             elif re.fullmatch(r'/api/servers/[a-f0-9]{12}/stop',self.path):stop(self.path.split('/')[3],actor);result={'stopped':True}
+            elif re.fullmatch(r'/api/servers/[a-f0-9]{12}/restart',self.path):result=restart(self.path.split('/')[3],actor)
+            elif re.fullmatch(r'/api/servers/[a-f0-9]{12}/delete',self.path):delete_entry(self.path.split('/')[3],actor);result={'deleted':True,'worldKept':True}
+            elif re.fullmatch(r'/api/servers/[a-f0-9]{12}/restore',self.path):restore_entry(self.path.split('/')[3],actor);result={'restored':True}
             else:self.reply(404,{'error':'Not found'});return
             self.reply(200,result)
         except PermissionError as e:self.reply(403,{'error':str(e)})

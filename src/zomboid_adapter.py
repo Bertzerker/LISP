@@ -40,6 +40,7 @@ class ZomboidAdapter:
     def __init__(self,root):
         self.path=root/'templates/zomboid';self.world_root=root/'worlds/zomboid'
         self._admin=None;self._details={};self._home=None;self._world=None;self._ready=False;self._level=None
+    def build(self):return json.loads((self.path/'.lisp-source.json').read_text())['buildid']
     def installed(self):
         return all((self.path/f).is_file() for f in ('jre64/bin/java','java/projectzomboid.jar','lispclasses/LispZomboid.class','.lisp-installed'))
     def modes(self):return {'coop':'Co-op (Apocalypse)','pvp':'PvP (Apocalypse)'}
@@ -53,11 +54,11 @@ class ZomboidAdapter:
             if not WORLD.fullmatch(meta.parent.name):continue
             try:
                 data=json.loads(meta.read_text())
-                if data['map'] in self.maps() and data['mode'] in self.modes():result.append({k:data[k] for k in ('id','name','mode','map')})
+                if data.get('buildid')==self.build() and data['map'] in self.maps() and data['mode'] in self.modes():result.append({k:data[k] for k in ('id','name','mode','map','ownerId')})
             except (OSError,ValueError,KeyError):continue
         return sorted(result,key=lambda w:w['name'].casefold())
     def catalog(self):
-        return {'id':self.id,'name':self.name,'engine':self.engine,'modes':[{'id':k,'name':v,'players':self.players(k)} for k,v in self.modes().items()],'maps':self.maps(),'adminKind':'zomboid','joinPasswordSupported':True,'persistentWorlds':True,'worlds':self.worlds(),'clientNote':'Use the matching stable Steam client. Map selection is a starting region in the shared Kentucky world. Worlds are saved; up to two Zomboid worlds use two ports each. Maximum 8 players per world on this PC.'}
+        return {'id':self.id,'name':self.name,'engine':self.engine,'modes':[{'id':k,'name':v,'players':self.players(k)} for k,v in self.modes().items()],'maps':self.maps(),'adminKind':'zomboid','joinPasswordSupported':True,'persistentWorlds':True,'worlds':self.worlds(),'clientNote':'Use the client matching the installed Steam server build. Map selection is a starting region in the shared Kentucky world. Worlds are saved; each Zomboid world uses two ports. Maximum 8 players per world on this PC.'}
     def reserved_ports(self,port):return [(port,socket.SOCK_DGRAM),(port+1,socket.SOCK_DGRAM),(port,socket.SOCK_STREAM)]
     def public_details(self):return self._details
     def prepare_request(self,home,port,mode,level,players,password,admin_password,admin_ids,mutators,data):
@@ -72,15 +73,18 @@ class ZomboidAdapter:
         if requested!='new':
             if not meta.is_file():raise ValueError('Saved world not found.')
             metadata=json.loads(meta.read_text())
+            if metadata.get('buildid')!=self.build():raise ValueError('This world needs its original Zomboid build.')
+            actor=data['_actor']
+            if actor['role']!='admin' and metadata.get('ownerId')!=actor['id']:raise PermissionError('Only the world owner or an administrator can resume it.')
             if (mode,level)!=(metadata['mode'],metadata['map']):raise ValueError('Keep the saved world mode and starting region.')
         else:
             name=data.get('worldName','').strip() if isinstance(data.get('worldName',''),str) else None
             if name is None or not re.fullmatch(r'[A-Za-z0-9 _-]{0,40}',name):raise ValueError('World names may use up to 40 letters, numbers, spaces, underscores or hyphens.')
             world.mkdir(mode=0o700)
-            metadata={'id':ident,'name':name or 'LAN world '+ident[:6],'mode':mode,'map':level,'created':int(time.time())}
+            metadata={'id':ident,'name':name or 'LAN world '+ident[:6],'mode':mode,'map':level,'created':int(time.time()),'buildid':self.build(),'ownerId':data['_actor']['id']}
             private_file(meta,json.dumps(metadata,indent=2)+'\n')
         world.chmod(0o700);self._world=world;self._home=home;self._level=level
-        self._details={'worldId':ident,'worldName':metadata['name'],'directPort':port+1,'adminPort':port if admin_password else None}
+        self._details={'persistentWorld':True,'worldId':ident,'worldName':metadata['name'],'directPort':port+1,'adminPort':port if admin_password else None}
         self._admin=admin_password or secrets.token_hex(24)
         game=home/'game';game.mkdir()
         subprocess.run(['cp','-a','--reflink=auto',str(self.path)+'/.',str(game)],check=True,timeout=180)
@@ -109,7 +113,7 @@ class ZomboidAdapter:
                     log.seek(0,2);size=log.tell();log.seek(max(0,size-262144));tail=log.read()
                 if b'SERVER STARTED' not in tail:return None
                 self._ready=True
-            response=rcon('127.0.0.1',port,self._admin,'players',.6)
+            response=rcon(os.environ.get('LISP_BIND_IP','192.168.8.138'),port,self._admin,'players',.6)
             match=re.search(r'Players connected\s*\((\d+)\)',response,re.I)
             return {'mapname':self._level,'clients':int(match.group(1)) if match else None}
         except (OSError,ValueError,PermissionError):return None

@@ -1,0 +1,29 @@
+{
+  "game": "sevendays",
+  "windowsLanChecks": [
+    {
+      "port": 27015,
+      "map": "Navezgane",
+      "lanQuery": {
+        "nativeConsoleQueryVerified": true,
+        "map": "Navezgane",
+        "maxPlayers": 2,
+        "configuredJoinPasswordVerified": true,
+        "steamBrowserQuery": "private visibility does not answer A2S"
+      },
+      "wrongCorrectLanAdminVerified": true
+    },
+    {
+      "port": 27016,
+      "map": "Pregen06k01",
+      "lanQuery": {
+        "nativeConsoleQueryVerified": true,
+        "map": "Pregen06k01",
+        "maxPlayers": 4,
+        "configuredJoinPasswordVerified": true,
+        "steamBrowserQuery": "private visibility does not answer A2S"
+      },
+      "wrongCorrectLanAdminVerified": true
+    }
+  ]
+}

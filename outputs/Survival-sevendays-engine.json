@@ -1,0 +1,22 @@
+{
+  "game": "sevendays",
+  "twoInstancesReady": true,
+  "maps": [
+    "Navezgane",
+    "Pregen06k01"
+  ],
+  "modes": [
+    "coop",
+    "pvp"
+  ],
+  "playerLimits": [
+    2,
+    4
+  ],
+  "adminPasswordRejectionVerified": true,
+  "selectedNativeAdminVerified": true,
+  "independentStopVerified": true,
+  "savedWorldResumeVerified": true,
+  "ownedTestsStopped": true,
+  "version": "V3.3.0 b18"
+}

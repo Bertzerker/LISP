@@ -207,4 +207,7 @@ def registry():
     for cls in (BrinkAdapter,ContagionAdapter):
         a=cls(ROOT)
         if a.installed():games[a.id]=a
+    from sevendays_adapter import SevenDaysAdapter
+    a=SevenDaysAdapter(ROOT)
+    if a.installed():games[a.id]=a
     return dict(sorted(games.items(),key=lambda item:item[1].name.casefold()))

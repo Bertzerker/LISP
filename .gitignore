@@ -56,3 +56,15 @@ secrets.json
 *.pid
 .DS_Store
 Thumbs.db
+
+# Private restart presets and saved worlds
+records/
+worlds/
+instances/
+retired-instances/
+survival-tests/
+
+*.jar
+*.class
+
+deleted-records/

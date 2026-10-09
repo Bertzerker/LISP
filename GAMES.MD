@@ -83,3 +83,20 @@ wrong/correct admin passwords and independent stop. Two-instance production
 portal ownership/readiness/stop passed. Game list is alphabetical. All 21 prior
 games remain present. No additional game firewall rule. Player joining is untested.
 See docs/STEAM-EXTRAS.md and outputs/Steam-extras-portal-validation.json.
+
+## Persistent survival games and server lifecycle — 2026-10-09
+
+Project Zomboid (Steam app 380870, build 25485538) and 7 Days to Die
+(app 294420, build 25661908) use independent private copies of the completed
+Steam installations. Saved worlds belong to their creator, preserve progress
+and are selectable only with the matching build. Old Zomboid worlds remain intact.
+My Servers has owner/admin Stop and Restart with durable entries and settings;
+Game Servers retains launch and Join without management/delete controls.
+Six active servers are allowed; 32 new game ports make 36 choices, 27015–27050.
+Additional UDP/TCP game and TCP admin ranges are allowed only from the LAN.
+7 Days uses SteamID64 permissions for in-game administration, with its admin
+password protecting the native Telnet console. Actual player gameplay is untested.
+See docs/SURVIVAL.md, docs/MY-SERVERS.md and outputs/Survival-status.md.
+
+Stopped entries also have owner/admin Delete entry and recoverable Restore on
+My Servers; deletion keeps saved worlds and never deletes Steam/game files.

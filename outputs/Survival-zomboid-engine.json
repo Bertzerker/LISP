@@ -1,0 +1,23 @@
+{
+  "game": "zomboid",
+  "twoInstancesReady": true,
+  "maps": [
+    "Rosewood, KY",
+    "Echo Creek, KY"
+  ],
+  "modes": [
+    "coop",
+    "pvp"
+  ],
+  "playerLimits": [
+    2,
+    4
+  ],
+  "adminPasswordRejectionVerified": true,
+  "selectedNativeAdminVerified": false,
+  "independentStopVerified": true,
+  "savedWorldResumeVerified": true,
+  "ownedTestsStopped": true,
+  "nativeAdminHashAndWrongPasswordVerified": true,
+  "version": "42.21.0"
+}

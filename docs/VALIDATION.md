@@ -330,5 +330,33 @@ Both RPC/viewer listeners are loopback-only. No owned game/voice tests remained.
 - Seven existing services remained active. Only static web files were deployed;
   no service/controller restart, account/role or firewall change was needed.
 
+## Persistent survival worlds, lifecycle and capacity — 2026-10-09
+
+Two native Project Zomboid 42.21.0 and two 7 Days V3.3.0 b18 instances passed
+maps/modes/player-limit configuration, selected join-password configuration,
+wrong/correct native admin authentication on loopback/LAN where supported,
+independent stopping and save/resume of the same world. Zomboid also passed
+Windows Steam query/password flags and native admin-account hash checks. 7 Days
+private visibility does not answer A2S; native LAN console readiness/admin checks
+passed, with its selected SteamID64 present in the native permissions file.
+
+Production authenticated Stop/Restart retained the same ID/world/owner/port and
+password protection for both games. Six real Quake Live servers on new ports
+passed simultaneous readiness and Windows LAN queries; a seventh was rejected.
+Stopped records survived a controller restart and restarted successfully. Nine
+Linux tests plus JavaScript fixtures cover six-slot accounting, owner/admin
+permissions, private durable presets, world/build guards, stale-instance restart,
+Delete/Restore and public-list control placement. Browser Delete retained a
+selectable world and exposed no launch passwords. All tests use owned instances;
+player matches, existing games/accounts/forum/chat/Mumble/downloads are preserved.
+Player joining/gameplay and six-heavy-world load remain untested.
+
+Browser validation also passed Delete entry → world still selectable → Restore
+entry → Restart reaches running with the same 7 Days world. The final test entry
+was stopped. Screenshots: outputs/Survival-my-servers.png and Survival-running.png.
+Only owned test entries/worlds were moved into private test storage; all player
+worlds and legacy Zomboid worlds are retained. Source package excludes Game Files,
+saved worlds, private/deleted presets, compiled binaries, ISOs and credentials.
+
 - HTTP check before the ET: Legacy addition: 47 downloads passed HEAD/size and resumable-range checks. The 40 original entries are present under their original names except `AOE.iso`, now `Age of Empires Collection.iso`; its SHA-256 still matches the original transfer manifest. The source drive was unavailable for a new complete local checksum comparison.
 - Final service check: controller, nginx website, index timer and SFTP/SSH were active. No test matches remained running.

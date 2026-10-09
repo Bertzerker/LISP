@@ -17,5 +17,6 @@ ProtectHome=true
 ReadWritePaths=/srv/lan-party/servers
 MemoryMax=7G
 TasksMax=256
+LimitNOFILE=16384
 [Install]
 WantedBy=multi-user.target

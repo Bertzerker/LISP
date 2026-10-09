@@ -1,0 +1,29 @@
+{
+  "game": "zomboid",
+  "windowsLanChecks": [
+    {
+      "port": 27015,
+      "map": "Rosewood, KY",
+      "lanQuery": {
+        "name": "LISP - Owned pair validation",
+        "map": "Muldraugh, KY",
+        "players": 0,
+        "maxPlayers": 2,
+        "passwordProtected": true
+      },
+      "wrongCorrectLanAdminVerified": true
+    },
+    {
+      "port": 27017,
+      "map": "Echo Creek, KY",
+      "lanQuery": {
+        "name": "LISP - Owned pair validation",
+        "map": "Muldraugh, KY",
+        "players": 0,
+        "maxPlayers": 4,
+        "passwordProtected": true
+      },
+      "wrongCorrectLanAdminVerified": true
+    }
+  ]
+}

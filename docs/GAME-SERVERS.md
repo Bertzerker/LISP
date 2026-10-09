@@ -1,6 +1,6 @@
 # Game servers
 
-The portal lists the installed allowlisted adapters. Each offers maps read from the game folders and PAK/PK3/VPK archives. It never accepts an executable path from a browser request. Maximum four simultaneous matches on game ports 27015–27018; multiple instances of any one supported game are permitted.
+The portal lists the installed allowlisted adapters. Each offers maps read from the game folders and PAK/PK3/VPK archives. It never accepts an executable path from a browser request. Maximum six simultaneous matches on game ports 27015–27050 (36 choices); multiple instances of any one supported game are permitted.
 
 | Game | Modes | Join password | Administration |
 | --- | --- | --- | --- |
@@ -21,7 +21,7 @@ For Source and GoldSrc games, set `rcon_password YOUR_ADMIN_PASSWORD` in the cli
 
 Quake Live does not implement the same in-game password-based RCON system. Enter one or more 17-digit SteamID64 values in the portal for in-game admin rights. Its optional admin password secures an external ZeroMQ RCON connection, not an in-game login command. The UI explains this distinction.
 
-The command-line launcher supports `--ask-passwords`, which reads hidden prompts so credentials are not exposed in shell command arguments. Use `--admin-steam-ids` for Quake Live and `--port` to request an explicit free port.
+The command-line launcher supports `--ask-passwords`, which reads hidden prompts so credentials are not exposed in shell command arguments. Use `--admin-steam-ids` for Quake Live and 7 Days to Die and `--port` to request an explicit free port.
 
 ## Connection policy
 The shared principle is to keep Steam authentication operational while limiting inbound access to the LAN with the firewall. Quake Live uses sv_serverType 2, sv_lan 0 and sv_master 0. Source/GoldSrc use their own sv_lan and master-server controls; Quake-specific variables are not copied to them. No router forwarding is configured. LAN discovery is not guaranteed: use the displayed direct-connect command.
@@ -38,3 +38,10 @@ GoldSrc uses the service account's Steam SDK library and distinct Steam ports pe
 ## Star Wars Battlefront II (2005)
 
 The original dedicated server now supports multiple private Proton Wine instances, installed mission discovery, mode filtering, join/admin passwords (maximum 15 characters), LAN join instructions and independent stops. See [SWBF2.md](SWBF2.md). UDP 3656 discovery is allowed only from 192.168.8.0/24 after approval. Real client compatibility remains to be tested.
+
+## Persistent worlds and lifecycle
+
+Project Zomboid and 7 Days to Die support owned, build-compatible saved worlds.
+Stop saves and retains the entry. Restart reuses the same world, settings and owner,
+including after a controller restart. Manage these actions on My Servers. See
+[SURVIVAL.md](SURVIVAL.md) and [MY-SERVERS.md](MY-SERVERS.md).

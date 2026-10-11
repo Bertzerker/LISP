@@ -6,6 +6,10 @@
 
 A local portal for game downloads, on-demand dedicated servers, player accounts, text/voice chat and a forum.
 
+<p align="center">
+  <img width="420" src="docs/LISP.png">
+</p>
+
 Project Zomboid and 7 Days to Die are available with owned persistent worlds.
 My Servers now has **Stop** and **Restart**: worlds and settings remain, including
 after a reboot. Stopped servers have a **Server port** selector and **Save port**

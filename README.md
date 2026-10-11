@@ -1,7 +1,7 @@
 # LISP — LAN Party server
 
 <p align="center">
-  <img width="420" src="LAN Party.png">
+  <img width="420" src="docs/LAN Party.png">
 </p>
 
 A local portal for game downloads, on-demand dedicated servers, player accounts, text/voice chat and a forum.

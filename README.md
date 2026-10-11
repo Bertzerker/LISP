@@ -113,6 +113,16 @@ idle/sleep prevention, see [power management](docs/POWER-MANAGEMENT.md).
 `LISP.MD`, `GAMES.MD` and `quake live.MD` retain the original planning notes and
 implementation history. The guides above describe current operation.
 
+## Portal and LAN illustrations
+
+<p align="center">
+  <img width="420" src="docs/LAN Party.png" alt="Illustrated LAN party setup">
+</p>
+
+<p align="center">
+  <img width="420" src="docs/LISP.png" alt="LISP portal screenshot">
+</p>
+
 ## Sharing and licenses
 
 Share the source, not the running host's private state. Game Files, game binaries,

@@ -178,3 +178,12 @@ real separate CPU/LAN counters, player charging/admin exemption, browser top-up
 and automatic credit-floor stop passed. Existing accounts and baseline entries
 remain; no firewall permissions changed. No real payment service is connected.
 See docs/CREDITS-AND-LOAD.md and outputs/Credit-load-live.json.
+
+## Administrator login across interfaces — 2026-10-11
+
+Admin-role accounts no longer require the saved IP/MAC at login or on each
+session request. Missing neighbor observations do not block an admin. Player
+restrictions remain. Fourteen account tests and live changed-IP/missing-MAC,
+CSRF/logout and actual HTTPS admin/Forum/My Servers/Accounts checks passed.
+No role, password or stored binding was changed; only lisp-accounts restarted.
+See docs/ACCOUNTS-FORUM.md and outputs/Admin-interface-login.json.

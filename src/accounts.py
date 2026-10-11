@@ -1,4 +1,4 @@
-"""Local accounts, IP/MAC-bound sessions and a persistent plain-text forum."""
+"""Local accounts, player IP/MAC binding and a persistent plain-text forum."""
 import hashlib,hmac,ipaddress,json,os,re,secrets,sqlite3,subprocess,threading,time
 from contextlib import contextmanager
 from pathlib import Path
@@ -92,32 +92,43 @@ CREATE TABLE IF NOT EXISTS irc_tickets(token TEXT PRIMARY KEY,user_id INTEGER,ex
             return self.login(name,password,ip)
     def login(self,name,password,ip):
         with self.lock,self.db() as c:
-            self.throttle(ip);device=self.lookup(ip)
+            self.throttle(ip)
             row=c.execute('SELECT * FROM users WHERE name=?',(str(name),)).fetchone()
             # Perform the same expensive transform for an unknown account.
             salt=row['salt'] if row else '0'*32
             good=isinstance(password,str) and len(password)<=128 and hmac.compare_digest(self.digest(password,salt),row['digest'] if row else '0'*128)
             if not row or not good or not row['enabled']:raise PermissionError('Incorrect account name or password.')
-            if (row['ip'],row['mac'])!=(device['ip'],device['mac']):raise PermissionError('Your network interface changed. Ask an admin to bind this interface to your account.')
+            device=self.session_device(row,ip)
+            if row['role']!='admin' and (row['ip'],row['mac'])!=(device['ip'],device['mac']):raise PermissionError('Your network interface changed. Ask an admin to bind this interface to your account.')
             self.attempts.pop(ip,None)
             return self.new_session(c,row,device)
+    def session_device(self,user,ip):
+        if user['role']!='admin':return self.lookup(ip)
+        # Admin identity comes from credentials/session, never a neighbor entry.
+        # Keep current observations for display, without requiring a visible MAC.
+        address=str(ipaddress.IPv4Address(ip))
+        try:mac=self.lookup(address)['mac']
+        except (PermissionError,OSError,ValueError,KeyError,IndexError,subprocess.SubprocessError):mac=''
+        return {'ip':address,'mac':mac}
     def new_session(self,c,user,device):
         now=time.time();c.execute('DELETE FROM sessions WHERE expires<?',(now,))
         if c.execute('SELECT count(*) FROM sessions').fetchone()[0]>=1000:raise ValueError('Session limit reached. Try again later.')
         token=secrets.token_urlsafe(32);csrf=secrets.token_urlsafe(32)
         c.execute('INSERT INTO sessions VALUES(?,?,?,?,?,?)',(hashlib.sha256(token.encode()).hexdigest(),user['id'],csrf,now+8*3600,device['ip'],device['mac']))
-        return token,self.public(user,csrf)
-    def public(self,user,csrf):return {'authenticated':True,'id':user['id'],'name':user['name'],'role':user['role'],'mustChange':bool(user['must_change']),'ip':user['ip'],'mac':user['mac'],'csrf':csrf}
+        return token,self.public(user,csrf,device)
+    def public(self,user,csrf,device=None):
+        source=device if user['role']=='admin' and device is not None else user
+        return {'authenticated':True,'id':user['id'],'name':user['name'],'role':user['role'],'mustChange':bool(user['must_change']),'ip':source['ip'],'mac':source['mac'],'csrf':csrf}
     def session(self,token,ip,csrf=None,allow_change=False,admin=False):
-        device=self.lookup(ip)
         with self.db() as c:
             row=c.execute('SELECT users.*,sessions.csrf,sessions.expires,sessions.ip AS session_ip,sessions.mac AS session_mac FROM sessions JOIN users ON users.id=sessions.user_id WHERE sessions.token=?',(hashlib.sha256(token.encode()).hexdigest(),)).fetchone()
         if not row or not row['enabled'] or row['expires']<time.time():raise PermissionError('Log in to the LAN portal.')
-        if (row['ip'],row['mac'])!=(device['ip'],device['mac']) or (row['session_ip'],row['session_mac'])!=(device['ip'],device['mac']):raise PermissionError('Your interface changed. Ask an admin to update your account binding.')
+        device=self.session_device(row,ip)
+        if row['role']!='admin' and ((row['ip'],row['mac'])!=(device['ip'],device['mac']) or (row['session_ip'],row['session_mac'])!=(device['ip'],device['mac'])):raise PermissionError('Your interface changed. Ask an admin to update your account binding.')
         if csrf is not None and (not isinstance(csrf,str) or not hmac.compare_digest(csrf,row['csrf'])):raise PermissionError('Refresh your login before making changes.')
         if row['must_change'] and not allow_change:raise PermissionError('Change your temporary password on the home page first.')
         if admin and row['role']!='admin':raise PermissionError('Administrator access required.')
-        return self.public(row,row['csrf'])
+        return self.public(row,row['csrf'],device)
     def logout(self,token):
         with self.db() as c:
             key=hashlib.sha256(token.encode()).hexdigest();row=c.execute('SELECT user_id FROM sessions WHERE token=?',(key,)).fetchone()
@@ -130,11 +141,12 @@ CREATE TABLE IF NOT EXISTS irc_tickets(token TEXT PRIMARY KEY,user_id INTEGER,ex
             c.execute('INSERT INTO irc_tickets VALUES(?,?,?,?,?)',(hashlib.sha256(code.encode()).hexdigest(),user['id'],time.time()+120,user['ip'],user['mac']))
         return {'code':code,'expiresIn':120,'name':user['name']}
     def irc_login(self,name,code,ip):
-        device=self.lookup(ip)
         with self.lock,self.db() as c:
             key=hashlib.sha256(str(code).encode()).hexdigest()
             row=c.execute('SELECT users.*,irc_tickets.expires,irc_tickets.ip AS ticket_ip,irc_tickets.mac AS ticket_mac FROM irc_tickets JOIN users ON users.id=irc_tickets.user_id WHERE irc_tickets.token=?',(key,)).fetchone()
-            if not row or not row['enabled'] or row['must_change'] or row['expires']<time.time() or row['name'].casefold()!=str(name).casefold() or (row['ticket_ip'],row['ticket_mac'])!=(device['ip'],device['mac']) or (row['ip'],row['mac'])!=(device['ip'],device['mac']):raise PermissionError('Create a fresh IRC code on the portal home page.')
+            if not row or not row['enabled'] or row['must_change'] or row['expires']<time.time() or row['name'].casefold()!=str(name).casefold():raise PermissionError('Create a fresh IRC code on the portal home page.')
+            device=self.session_device(row,ip)
+            if row['role']!='admin' and ((row['ticket_ip'],row['ticket_mac'])!=(device['ip'],device['mac']) or (row['ip'],row['mac'])!=(device['ip'],device['mac'])):raise PermissionError('Create a fresh IRC code on the portal home page.')
             c.execute('DELETE FROM irc_tickets WHERE token=?',(key,))
             return self.new_session(c,row,device)
     def change(self,user,current,new,ip):
@@ -146,7 +158,8 @@ CREATE TABLE IF NOT EXISTS irc_tickets(token TEXT PRIMARY KEY,user_id INTEGER,ex
             salt=secrets.token_hex(16);c.execute('UPDATE users SET salt=?,digest=?,must_change=0 WHERE id=?',(salt,self.digest(new,salt),user['id']));c.execute('DELETE FROM sessions WHERE user_id=?',(user['id'],))
             c.execute('DELETE FROM irc_tickets WHERE user_id=?',(user['id'],))
             self.audit(c,user['id'],'password-change',user['id'])
-            return self.new_session(c,c.execute('SELECT * FROM users WHERE id=?',(user['id'],)).fetchone(),self.lookup(ip))
+            updated=c.execute('SELECT * FROM users WHERE id=?',(user['id'],)).fetchone()
+            return self.new_session(c,updated,self.session_device(updated,ip))
     def users(self):
         with self.db() as c:return [dict(row) for row in c.execute('SELECT id,name,role,ip,mac,enabled,must_change FROM users ORDER BY name')]
     def community_users(self):

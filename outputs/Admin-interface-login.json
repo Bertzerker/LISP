@@ -1,0 +1,16 @@
+{
+  "date": "2026-10-11",
+  "linuxAccountTests": 14,
+  "realLanHttpsAdminLogin": true,
+  "authenticatedForumMyServersAndAccounts": true,
+  "syntheticChangedIpAndMissingMacLiveService": true,
+  "adminCheckPassedAfterIpChange": true,
+  "csrfAndLogoutRevocationPassed": true,
+  "playerBindingRegressionPassed": true,
+  "noRolePasswordOrBindingChanges": true,
+  "onlyAccountServiceRestarted": true,
+  "testSessionsLoggedOut": true,
+  "existingRobertkoppBrowserSessionAcrossChangedIpMac": true,
+  "browserAdminCardsExemptPlayerRebindFormsRetained": true,
+  "screenshot": "outputs/Admin-interface-login.png"
+}

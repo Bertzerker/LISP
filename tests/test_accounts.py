@@ -26,6 +26,50 @@ class AccountTests(unittest.TestCase):
         self.a=Accounts(self.tmp.name,lookup=lambda ip:self.devices[ip]);self.a.create('HostAdmin','AdminPassword123',self.devices['192.168.8.2'],'admin');self.a.create('PlayerTwo','PlayerPassword123',self.devices['192.168.8.3'])
         self.at,self.admin=self.a.login('HostAdmin','AdminPassword123','192.168.8.2');self.pt,self.player=self.a.login('PlayerTwo','PlayerPassword123','192.168.8.3')
     def tearDown(self):self.tmp.cleanup()
+    def test_admin_login_and_session_ignore_ip_and_mac_changes(self):
+        token,user=self.a.login('HostAdmin','AdminPassword123','192.168.8.3')
+        self.assertEqual((user['ip'],user['mac']),('192.168.8.3','00:11:22:33:44:03'))
+        self.devices['192.168.8.2']['mac']='00:11:22:33:44:99'
+        user=self.a.session(token,'192.168.8.2',csrf=user['csrf'],admin=True)
+        self.assertEqual(user['mac'],'00:11:22:33:44:99')
+        # Historical account binding remains available if an admin becomes a player.
+        self.assertEqual(next(u for u in self.a.users() if u['id']==user['id'])['mac'],'00:11:22:33:44:02')
+    def test_admin_without_neighbor_entry_and_password_change(self):
+        with patch.object(self.a,'lookup',side_effect=PermissionError('No visible interface')):
+            token,user=self.a.login('HostAdmin','AdminPassword123','192.168.8.99')
+            self.assertEqual(user['mac'],'')
+            self.a.session(self.at,'192.168.8.99',admin=True)
+            token,user=self.a.change(user,'AdminPassword123','NewAdminPassword123','192.168.8.100')
+            self.assertEqual(user['ip'],'192.168.8.100')
+            self.a.session(token,'192.168.8.101',admin=True)
+            with self.assertRaises(PermissionError):self.a.session(self.at,'192.168.8.99')
+            with self.assertRaises(PermissionError):self.a.login('PlayerTwo','PlayerPassword123','192.168.8.3')
+    def test_admin_exemption_keeps_credentials_csrf_expiry_and_disable_checks(self):
+        with self.assertRaises(PermissionError):self.a.login('HostAdmin','WrongPassword123','192.168.8.3')
+        with self.assertRaises(PermissionError):self.a.session(self.at,'192.168.8.3',csrf='forged')
+        with self.a.db() as c:c.execute('UPDATE users SET must_change=1 WHERE id=?',(self.admin['id'],))
+        with self.assertRaises(PermissionError):self.a.session(self.at,'192.168.8.3')
+        self.a.session(self.at,'192.168.8.3',allow_change=True)
+        with self.a.db() as c:c.execute('UPDATE users SET must_change=0,enabled=0 WHERE id=?',(self.admin['id'],))
+        with self.assertRaises(PermissionError):self.a.session(self.at,'192.168.8.3')
+        with self.assertRaises(PermissionError):self.a.login('HostAdmin','AdminPassword123','192.168.8.3')
+        with self.a.db() as c:
+            c.execute('UPDATE users SET enabled=1 WHERE id=?',(self.admin['id'],))
+            c.execute('UPDATE sessions SET expires=0 WHERE user_id=?',(self.admin['id'],))
+        with self.assertRaises(PermissionError):self.a.session(self.at,'192.168.8.3')
+    def test_admin_irc_ticket_survives_interface_change_but_stays_single_use(self):
+        ticket=self.a.irc_ticket(self.admin)
+        with patch.object(self.a,'lookup',side_effect=PermissionError('Missing neighbor')):
+            token,user=self.a.irc_login('HostAdmin',ticket['code'],'192.168.8.99')
+            self.a.session(token,'192.168.8.100',admin=True)
+            with self.assertRaises(PermissionError):self.a.irc_login('HostAdmin',ticket['code'],'192.168.8.99')
+    def test_admin_demotion_restores_player_binding_and_revokes_sessions(self):
+        self.a.manage(self.admin,{'op':'role','id':self.player['id'],'role':'admin'})
+        token,user=self.a.login('PlayerTwo','PlayerPassword123','192.168.8.2')
+        self.a.manage(self.admin,{'op':'role','id':user['id'],'role':'player'})
+        with self.assertRaises(PermissionError):self.a.session(token,'192.168.8.2')
+        with self.assertRaises(PermissionError):self.a.login('PlayerTwo','PlayerPassword123','192.168.8.2')
+        self.a.login('PlayerTwo','PlayerPassword123','192.168.8.3')
     def test_interface_and_cookie_binding(self):
         with self.assertRaises(PermissionError):self.a.session(self.pt,'192.168.8.2')
         with self.assertRaises(PermissionError):self.a.login('PlayerTwo','PlayerPassword123','192.168.8.2')

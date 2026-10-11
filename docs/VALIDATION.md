@@ -409,5 +409,20 @@ the real browser's General/Shooter/Strategy tree passed. Only Mumble and its
 viewer restarted. PC reboot/audio playback were not tested. Evidence:
 outputs/Mumble-boot-live.json and outputs/Mumble-boot-restored.png.
 
+## Administrator login across interfaces — 2026-10-11
+
+Admin-role accounts no longer require the saved IP/MAC at login or on each
+session request. Missing neighbor observations do not block an admin. Player
+restrictions remain. Fourteen account tests and live changed-IP/missing-MAC,
+CSRF/logout and actual HTTPS admin/Forum/My Servers/Accounts checks passed.
+No role, password or stored binding was changed; only lisp-accounts restarted.
+See docs/ACCOUNTS-FORUM.md and outputs/Admin-interface-login.json.
+
+The actual browser's existing Robertkopp administrator session also accessed
+Accounts from an IP/MAC different from its saved binding. Admin cards showed
+No interface restriction and omitted rebinding; player rebind forms remained.
+Screenshot: outputs/Admin-interface-login.png. The existing browser login was
+retained; only the independent script-created validation sessions were logged out.
+
 - HTTP check before the ET: Legacy addition: 47 downloads passed HEAD/size and resumable-range checks. The 40 original entries are present under their original names except `AOE.iso`, now `Age of Empires Collection.iso`; its SHA-256 still matches the original transfer manifest. The source drive was unavailable for a new complete local checksum comparison.
 - Final service check: controller, nginx website, index timer and SFTP/SSH were active. No test matches remained running.

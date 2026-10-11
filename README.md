@@ -1,5 +1,9 @@
 # LISP — LAN Party server
 
+<p align="center">
+  <img width="420" src="LAN Party.png">
+</p>
+
 A local portal for game downloads, on-demand dedicated servers, player accounts, text/voice chat and a forum.
 
 Project Zomboid and 7 Days to Die are available with owned persistent worlds.
